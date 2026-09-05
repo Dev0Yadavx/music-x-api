@@ -11,8 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Music X API",
-    description="High-Speed JioSaavn Music Engine with Liquid Glass Docs",
-    version="2.0.0",
+    description="Music x Api Best Music Api all end",
+    version="2.1.0",
     docs_url="/swagger",
     redoc_url=None
 )
@@ -164,13 +164,13 @@ DOCS_HTML = """<!DOCTYPE html>
       --glass-shine: rgba(255, 255, 255, 0.2);
       --accent: #6366f1;
       --accent-glow: rgba(99, 102, 241, 0.4);
-      --accent-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      --accent-grad: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #8b5cf6 100%);
       --text: #f8fafc;
       --text-dim: #94a3b8;
       --success: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 60px; position: relative; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 40px; position: relative; }
     
     .ambient-orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
     .orb-1 { width: 450px; height: 450px; background: rgba(99, 102, 241, 0.25); top: -100px; left: -100px; animation: float 16s infinite alternate ease-in-out; }
@@ -187,23 +187,25 @@ DOCS_HTML = """<!DOCTYPE html>
       border-radius: 24px;
     }
 
-    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px 20px; position: relative; z-index: 1; }
 
     header { text-align: center; margin-bottom: 40px; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 600; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 16px; }
-    .title { font-size: 2.7rem; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .subtitle { color: var(--text-dim); margin-top: 10px; font-size: 1.05rem; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .title { font-size: 2.8rem; font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: #38bdf8; margin-top: 10px; font-size: 1.15rem; font-weight: 600; letter-spacing: -0.01em; }
 
     /* Base URL Display Box */
     .base-card { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 36px; }
     .base-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-weight: 700; margin-bottom: 4px; }
-    .base-url { font-family: monospace; font-size: 1.05rem; color: #38bdf8; font-weight: 600; word-break: break-all; }
+    .base-url { font-family: monospace; font-size: 1.05rem; color: #34d399; font-weight: 600; word-break: break-all; }
     
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s ease; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s ease; text-decoration: none; }
     .btn-grad { background: var(--accent-grad); color: #fff; box-shadow: 0 4px 18px var(--accent-glow); }
     .btn-grad:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--accent-glow); }
     .btn-ghost { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: #fff; }
-    .btn-ghost:hover { background: rgba(255, 255, 255, 0.12); }
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.14); }
+    .btn-test { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; }
+    .btn-test:hover { background: rgba(56, 189, 248, 0.25); color: #fff; }
 
     /* Endpoints Grid */
     .endpoints-grid { display: flex; flex-direction: column; gap: 18px; }
@@ -214,8 +216,18 @@ DOCS_HTML = """<!DOCTYPE html>
     .ep-path { font-size: 1.15rem; font-weight: 700; font-family: monospace; color: #fff; }
     .ep-desc { color: var(--text-dim); font-size: 0.92rem; margin-bottom: 14px; line-height: 1.5; }
     
-    .url-preview { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: monospace; font-size: 0.88rem; color: #e2e8f0; }
-    .url-text { word-break: break-all; }
+    .url-preview { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-family: monospace; font-size: 0.88rem; color: #e2e8f0; flex-wrap: wrap; }
+    .url-text { word-break: break-all; flex: 1; min-width: 200px; }
+    .action-group { display: flex; gap: 8px; }
+
+    /* Footer Styling */
+    footer { margin-top: 50px; padding: 28px 20px; text-align: center; border-radius: 20px; }
+    .dev-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; background: linear-gradient(135deg, #f43f5e, #fb923c, #eab308, #3b82f6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .social-links { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+    .social-badge { display: inline-flex; align-items: center; gap: 8px; background: #000000; border: 1px solid rgba(255, 255, 255, 0.15); padding: 9px 16px; border-radius: 12px; color: #fff; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: 0.2s ease; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
+    .social-badge:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.35); background: #0a0d18; }
+    .social-badge svg { width: 18px; height: 18px; fill: currentColor; }
+    .copyright { font-size: 0.85rem; font-weight: 600; background: linear-gradient(135deg, #ec4899, #8b5cf6, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
     .toast { position: fixed; bottom: 24px; right: 24px; background: #10b981; color: #fff; padding: 12px 22px; border-radius: 14px; font-weight: 600; font-size: 0.9rem; transform: translateY(100px); opacity: 0; transition: 0.3s; z-index: 999; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
     .toast.show { transform: translateY(0); opacity: 1; }
@@ -229,14 +241,14 @@ DOCS_HTML = """<!DOCTYPE html>
   <div class="container">
     <header>
       <div class="badge">✦ HIGH-SPEED ENGINE • 24/7 ONLINE</div>
-      <h1 class="title">Music X API Documentation</h1>
-      <p class="subtitle">Complete JioSaavn Gateway with 320kbps Direct Streams, Metadata & Downloads</p>
+      <h1 class="title">Music X API</h1>
+      <p class="subtitle">Music x Api Best Music Api all end</p>
     </header>
 
-    <!-- Dynamic Base URL Box -->
+    <!-- Base URL Card -->
     <div class="base-card liquid-glass">
       <div>
-        <div class="base-title">Active Host Base URL</div>
+        <div class="base-title">Active Base Host URL</div>
         <div class="base-url" id="baseUrlText">https://...</div>
       </div>
       <button class="btn btn-grad" onclick="copyBaseUrl()">
@@ -245,7 +257,7 @@ DOCS_HTML = """<!DOCTYPE html>
       </button>
     </div>
 
-    <!-- API Endpoints Section -->
+    <!-- Endpoints Section -->
     <div class="endpoints-grid">
 
       <!-- 1. Download -->
@@ -255,12 +267,15 @@ DOCS_HTML = """<!DOCTYPE html>
             <span class="method-get">GET</span>
             <span class="ep-path">/api/download</span>
           </div>
-          <span style="font-size:0.8rem; color:#f43f5e; font-weight:700;">★ NEW MP3 EXPORT</span>
+          <span style="font-size:0.8rem; color:#f43f5e; font-weight:700;">★ DIRECT MP3 EXPORT</span>
         </div>
-        <div class="ep-desc">Directly triggers high-speed 320kbps MP3 audio download in browser or mobile client with ID3 metadata tags.</div>
+        <div class="ep-desc">Directly triggers high-speed 320kbps MP3 audio download in browser or mobile app with ID3 metadata.</div>
         <div class="url-preview">
           <span class="url-text" id="url-download">/api/download?id=s_oVd9yZ</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-download')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-download">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-download')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -276,7 +291,10 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Search songs, movie albums, or singers with query matching (exact JioSaavn catalog parity).</div>
         <div class="url-preview">
           <span class="url-text" id="url-search">/api/search?q=Kesariya&limit=10</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-search')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-search">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-search')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -292,7 +310,10 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Retrieve song details and decrypted high-bitrate streaming URLs (96kbps, 160kbps, 320kbps).</div>
         <div class="url-preview">
           <span class="url-text" id="url-song">/api/song?id=s_oVd9yZ</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-song')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-song">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-song')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -308,7 +329,10 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Extract official Top Trending tracks currently featured on the JioSaavn homepage charts.</div>
         <div class="url-preview">
           <span class="url-text" id="url-trending">/api/trending</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-trending')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-trending">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-trending')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -324,7 +348,10 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Get artist biography, 500x500 profile picture, and all top popular tracks.</div>
         <div class="url-preview">
           <span class="url-text" id="url-artist">/api/artist?name=Arijit+Singh</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-artist')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-artist">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-artist')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -340,7 +367,10 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Search public playlists and unpack full song tracks with metadata.</div>
         <div class="url-preview">
           <span class="url-text" id="url-playlist">/api/playlist?q=Hindi+Romance</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-playlist')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-playlist">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-playlist')">Copy</button>
+          </div>
         </div>
       </div>
 
@@ -356,26 +386,56 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Extract official track lyrics with proper linebreaks and paragraph formatting.</div>
         <div class="url-preview">
           <span class="url-text" id="url-lyrics">/api/lyrics?id=s_oVd9yZ</span>
-          <button class="btn btn-ghost" onclick="copySnippet('url-lyrics')">Copy</button>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="test-lyrics">Live Test ↗</a>
+            <button class="btn btn-ghost" onclick="copySnippet('url-lyrics')">Copy</button>
+          </div>
         </div>
       </div>
 
     </div>
+
+    <!-- Liquid Glass Custom Footer -->
+    <footer class="liquid-glass">
+      <div class="dev-title">Dev:BY-—͟͞͞ 𝙔ᴀᴅᴀᴠ<\>x- 🇮🇳𒌋ᥫ᭡</div>
+      <div class="social-links">
+        <!-- Telegram Black Badge SVG -->
+        <a href="https://t.me/YADAVXAHIR" target="_blank" class="social-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+          Telegram
+        </a>
+        <!-- GitHub Black Badge SVG -->
+        <a href="https://github.com/ayashisheditingbahira9356-maker" target="_blank" class="social-badge">
+          <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+          GitHub
+        </a>
+      </div>
+      <div class="copyright">All Copyrights © Music x reserved</div>
+    </footer>
   </div>
 
-  <div id="toast" class="toast">URL Copied to Clipboard!</div>
+  <div id="toast" class="toast">Copied to Clipboard!</div>
 
   <script>
     const origin = window.location.origin;
     document.getElementById('baseUrlText').innerText = origin;
 
-    // Prepend full domain to all snippet preview texts
-    const snippetIds = ['url-download', 'url-search', 'url-song', 'url-trending', 'url-artist', 'url-playlist', 'url-lyrics'];
-    snippetIds.forEach(id => {
-      const el = document.getElementById(id);
-      if(el) {
-        el.innerText = origin + el.innerText;
-      }
+    const endpoints = [
+      { textId: 'url-download', testId: 'test-download', path: '/api/download?id=s_oVd9yZ' },
+      { textId: 'url-search', testId: 'test-search', path: '/api/search?q=Kesariya&limit=10' },
+      { textId: 'url-song', testId: 'test-song', path: '/api/song?id=s_oVd9yZ' },
+      { textId: 'url-trending', testId: 'test-trending', path: '/api/trending' },
+      { textId: 'url-artist', testId: 'test-artist', path: '/api/artist?name=Arijit+Singh' },
+      { textId: 'url-playlist', testId: 'test-playlist', path: '/api/playlist?q=Hindi+Romance' },
+      { textId: 'url-lyrics', testId: 'test-lyrics', path: '/api/lyrics?id=s_oVd9yZ' }
+    ];
+
+    endpoints.forEach(ep => {
+      const textEl = document.getElementById(ep.textId);
+      const testEl = document.getElementById(ep.testId);
+      const fullUrl = origin + ep.path;
+      if (textEl) textEl.innerText = fullUrl;
+      if (testEl) testEl.href = fullUrl;
     });
 
     function showToast(msg) {
@@ -405,22 +465,12 @@ DOCS_HTML = """<!DOCTYPE html>
 @app.get("/", response_class=HTMLResponse, tags=["Documentation"])
 @app.get("/docs", response_class=HTMLResponse, tags=["Documentation"])
 def modern_docs():
-    """Returns Liquid Glass Styled Modern Documentation UI"""
     return DOCS_HTML
 
-# 1. NEW DOWNLOAD ENDPOINT
+# 1. DOWNLOAD ENDPOINT
 @app.get("/api/download", tags=["Download"])
 def download_song(id: str = Query(..., description="Track ID")):
-    """
-    Direct MP3 audio download endpoint.
-    Resolves 320kbps CDN stream and redirects as direct downloadable stream.
-    """
-    params = {
-        '__call': 'song.getDetails',
-        '_format': 'json',
-        '_marker': '0',
-        'pids': id
-    }
+    params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
     try:
         res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=6).json()
         song = res.get(id) or (res.get('songs', [])[0] if res.get('songs') else None)
@@ -436,7 +486,6 @@ def download_song(id: str = Query(..., description="Track ID")):
         if not download_url:
             raise HTTPException(status_code=500, detail="Audio stream unavailable for download")
         
-        # Redirect to the direct CDN stream URL which browsers download immediately
         return RedirectResponse(url=download_url)
     except HTTPException:
         raise
@@ -491,12 +540,7 @@ def search_songs(q: str = Query(..., description="Song name"), page: int = 1, li
 # 3. SONG DETAILS
 @app.get("/api/song", tags=["Streams"])
 def get_song(id: str = Query(..., description="Track ID")):
-    params = {
-        '__call': 'song.getDetails',
-        '_format': 'json',
-        '_marker': '0',
-        'pids': id
-    }
+    params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
     try:
         res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=6).json()
         song = res.get(id) or (res.get('songs', [])[0] if res.get('songs') else None)
@@ -511,13 +555,7 @@ def get_song(id: str = Query(..., description="Track ID")):
 # 4. TRENDING CHARTS
 @app.get("/api/trending", tags=["Trending"])
 def get_trending():
-    params = {
-        '__call': 'webapi.getLaunchData',
-        '_format': 'json',
-        '_marker': '0',
-        'api_version': '4',
-        'ctx': 'web6dot0'
-    }
+    params = {'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0'}
     try:
         res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
         trending = res.get('new_trending', [])
