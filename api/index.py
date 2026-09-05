@@ -133,17 +133,17 @@ def format_song(song):
         "stream_urls": fetch_stream_urls(enc_url)
     }
 
-@app.get("/", include_in_schema=False)
+@app.get("/")
 def root():
     return RedirectResponse(url="/docs")
 
-@app.get("/api/search", tags=["Search"])
+@app.get("/api/search")
 def search_songs(q: str = Query(..., description="Query term"), page: int = 1, limit: int = 15):
     params = {'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': str(page), 'n': str(limit), 'q': q}
     res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
     return {"app": "Music X API", "status": "success", "total": res.get('total', 0), "data": [format_song(s) for s in res.get('results', [])]}
 
-@app.get("/api/song", tags=["Streams & Details"])
+@app.get("/api/song")
 def get_song(id: str = Query(..., description="Song ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
     res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=6).json()
@@ -152,7 +152,7 @@ def get_song(id: str = Query(..., description="Song ID")):
         raise HTTPException(status_code=404, detail="Song not found")
     return {"app": "Music X API", "status": "success", "data": format_song(song)}
 
-@app.get("/api/trending", tags=["Trending"])
+@app.get("/api/trending")
 def get_trending():
     params = {'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4'}
     res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
@@ -163,7 +163,7 @@ def get_trending():
         songs = res.get('results', [])
     return {"app": "Music X API", "status": "success", "data": [format_song(s) for s in songs[:15]]}
 
-@app.get("/api/artist", tags=["Artist"])
+@app.get("/api/artist")
 def get_artist(name: Optional[str] = None, id: Optional[str] = None):
     if not name and not id:
         raise HTTPException(status_code=400, detail="Provide either name or id")
@@ -186,7 +186,7 @@ def get_artist(name: Optional[str] = None, id: Optional[str] = None):
         "top_songs": [format_song(s) for s in top_songs if isinstance(s, dict)]
     }
 
-@app.get("/api/playlist", tags=["Playlists"])
+@app.get("/api/playlist")
 def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
     if not q and not id:
         raise HTTPException(status_code=400, detail="Provide either q or id")
@@ -206,7 +206,7 @@ def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
         "songs": [format_song(s) for s in res.get('songs', []) if isinstance(s, dict)]
     }
 
-@app.get("/api/lyrics", tags=["Lyrics"])
+@app.get("/api/lyrics")
 def get_lyrics(id: str = Query(..., description="Track ID")):
     res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
     if 'lyrics' in res and res['lyrics']:
