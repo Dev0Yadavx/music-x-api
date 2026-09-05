@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
     title="Music X API",
     description="Music x Api Best Music Api all end",
-    version="2.2.0",
+    version="2.3.0",
     docs_url="/swagger",
     redoc_url=None
 )
@@ -206,7 +206,6 @@ DOCS_HTML = """<!DOCTYPE html>
     .btn-ghost:hover { background: rgba(255, 255, 255, 0.14); }
     .btn-test { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; }
     .btn-test:hover { background: rgba(56, 189, 248, 0.25); color: #fff; }
-    .btn-action-mobile { flex: 1; }
 
     /* Endpoints Grid */
     .endpoints-grid { display: flex; flex-direction: column; gap: 16px; }
@@ -226,10 +225,14 @@ DOCS_HTML = """<!DOCTYPE html>
     .url-text { word-break: break-all; flex: 1; min-width: 180px; }
     .action-group { display: flex; gap: 6px; width: auto; }
 
-    /* In-UI JSON Viewer Console */
-    .json-viewer-container { display: none; margin-top: 14px; background: rgba(2, 4, 10, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 12px; }
-    .json-viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 6px; }
-    .json-output { max-height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.78rem; line-height: 1.5; color: #a5b4fc; white-space: pre-wrap; word-break: break-all; }
+    /* In-UI JSON / Media Viewer Console */
+    .json-viewer-container { display: none; margin-top: 14px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; }
+    .json-viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px; }
+    .json-output { max-height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.82rem; line-height: 1.6; color: #a5b4fc; white-space: pre-wrap; word-break: break-all; }
+
+    /* Audio Player in Download Console */
+    .audio-player-box { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .audio-player-box audio { width: 100%; height: 38px; border-radius: 8px; outline: none; }
 
     /* Footer Styling */
     footer { margin-top: 40px; padding: 24px 16px; text-align: center; border-radius: 20px; }
@@ -288,7 +291,7 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Search any tracks, movie soundtracks, or singers in real-time.</div>
         
         <div class="search-input-box">
-          <input type="text" id="liveSearchInput" placeholder="Type song name (e.g. Kesariya, Believer)..." value="Kesariya" />
+          <input type="text" id="liveSearchInput" placeholder="Type song name..." value="Kesariya" />
           <button class="btn btn-test" onclick="runLiveSearch()">Search</button>
         </div>
 
@@ -305,30 +308,79 @@ DOCS_HTML = """<!DOCTYPE html>
             <span>LIVE JSON RESPONSE</span>
             <span id="status-search">STATUS: 200 OK</span>
           </div>
-          <div class="json-output" id="json-out-search">// Click Run In UI or Search to preview data</div>
+          <div class="json-output" id="json-out-search"></div>
         </div>
       </div>
 
-      <!-- 2. Direct Download -->
+      <!-- 2. Direct Download & Stream Player -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
             <span class="ep-path">/api/download</span>
           </div>
-          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3</span>
+          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3 DOWNLOAD</span>
         </div>
-        <div class="ep-desc">Triggers direct browser/client 320kbps MP3 audio download.</div>
+        <div class="ep-desc">Fetches direct 320kbps MP3 stream for direct playback & downloading.</div>
+        
+        <div class="search-input-box">
+          <input type="text" id="dlInputId" placeholder="Song ID" value="s_oVd9yZ" />
+          <button class="btn btn-test" onclick="testDownloadPreview()">Preview & Play</button>
+        </div>
+
         <div class="url-preview">
           <span class="url-text" id="url-download">/api/download?id=s_oVd9yZ</span>
           <div class="action-group">
-            <a href="#" target="_blank" class="btn btn-test" id="test-download">Download ↗</a>
+            <a href="#" target="_blank" class="btn btn-test" id="test-download">Direct Download ↗</a>
             <button class="btn btn-ghost" onclick="copySnippet('url-download')">Copy</button>
+          </div>
+        </div>
+
+        <div class="json-viewer-container" id="json-box-download">
+          <div class="json-viewer-header">
+            <span>LIVE MP3 STREAM PLAYER</span>
+            <span id="status-download">READY</span>
+          </div>
+          <div class="audio-player-box">
+            <audio id="liveAudioPlayer" controls></audio>
+            <a href="#" target="_blank" class="btn btn-grad" id="btnDownloadNow">💾 Save 320kbps MP3 File</a>
           </div>
         </div>
       </div>
 
-      <!-- 3. Stream & Song Details -->
+      <!-- 3. Lyrics Endpoint -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/lyrics</span>
+          </div>
+          <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">★ SYNCHRONIZED LYRICS</span>
+        </div>
+        <div class="ep-desc">Extract official track lyrics with synced line breaks & proper paragraphs.</div>
+        
+        <div class="search-input-box">
+          <input type="text" id="lyricsInputId" placeholder="Song ID (e.g. s_oVd9yZ)" value="s_oVd9yZ" />
+          <button class="btn btn-test" onclick="testLiveLyrics()">Fetch Lyrics</button>
+        </div>
+
+        <div class="url-preview">
+          <span class="url-text" id="url-lyrics">/api/lyrics?id=s_oVd9yZ</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="runInUI('lyrics')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copySnippet('url-lyrics')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="json-box-lyrics">
+          <div class="json-viewer-header">
+            <span>OFFICIAL LYRICS OUTPUT</span>
+            <span id="status-lyrics">STATUS: 200 OK</span>
+          </div>
+          <div class="json-output" id="json-out-lyrics" style="color:#fde047; font-size:0.9rem; line-height:1.8;"></div>
+        </div>
+      </div>
+
+      <!-- 4. Song Details -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -337,7 +389,7 @@ DOCS_HTML = """<!DOCTYPE html>
           </div>
           <span style="font-size:0.75rem; color:var(--text-dim);">320kbps CDN</span>
         </div>
-        <div class="ep-desc">Retrieve song details and decrypted playable CDN streaming URLs.</div>
+        <div class="ep-desc">Retrieve metadata and decrypted playable CDN streaming URLs.</div>
         <div class="url-preview">
           <span class="url-text" id="url-song">/api/song?id=s_oVd9yZ</span>
           <div class="action-group">
@@ -354,7 +406,7 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 4. Trending Charts -->
+      <!-- 5. Trending Charts -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -363,7 +415,7 @@ DOCS_HTML = """<!DOCTYPE html>
           </div>
           <span style="font-size:0.75rem; color:var(--text-dim);">Top Charts</span>
         </div>
-        <div class="ep-desc">Extract official Top Trending tracks currently featured on homepage charts.</div>
+        <div class="ep-desc">Extract official Top Trending tracks currently featured on charts.</div>
         <div class="url-preview">
           <span class="url-text" id="url-trending">/api/trending</span>
           <div class="action-group">
@@ -380,7 +432,7 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 5. Artist Profile -->
+      <!-- 6. Artist Profile -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -406,7 +458,7 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 6. Playlists -->
+      <!-- 7. Playlists -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -429,32 +481,6 @@ DOCS_HTML = """<!DOCTYPE html>
             <span id="status-playlist">STATUS: 200 OK</span>
           </div>
           <div class="json-output" id="json-out-playlist"></div>
-        </div>
-      </div>
-
-      <!-- 7. Lyrics -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/lyrics</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Lyrics</span>
-        </div>
-        <div class="ep-desc">Extract official track lyrics with synced line breaks.</div>
-        <div class="url-preview">
-          <span class="url-text" id="url-lyrics">/api/lyrics?id=s_oVd9yZ</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="runInUI('lyrics')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copySnippet('url-lyrics')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="json-box-lyrics">
-          <div class="json-viewer-header">
-            <span>LIVE JSON RESPONSE</span>
-            <span id="status-lyrics">STATUS: 200 OK</span>
-          </div>
-          <div class="json-output" id="json-out-lyrics"></div>
         </div>
       </div>
 
@@ -521,7 +547,6 @@ DOCS_HTML = """<!DOCTYPE html>
       showToast('API URL Copied!');
     }
 
-    // Direct in-UI Live JSON fetcher
     async function runInUI(key, customPath = null) {
       const box = document.getElementById('json-box-' + key);
       const out = document.getElementById('json-out-' + key);
@@ -536,7 +561,12 @@ DOCS_HTML = """<!DOCTYPE html>
         const res = await fetch(path);
         const data = await res.json();
         stat.innerText = 'STATUS: ' + res.status + ' ' + (res.ok ? 'OK' : 'ERROR');
-        out.innerText = JSON.stringify(data, null, 2);
+        
+        if (key === 'lyrics' && data.lyrics) {
+          out.innerText = data.lyrics;
+        } else {
+          out.innerText = JSON.stringify(data, null, 2);
+        }
       } catch(err) {
         stat.innerText = 'STATUS: FAILED';
         out.innerText = '// Request failed: ' + err.message;
@@ -548,6 +578,42 @@ DOCS_HTML = """<!DOCTYPE html>
       const path = `/api/search?q=${encodeURIComponent(q)}&limit=5`;
       document.getElementById('url-search').innerText = origin + path;
       runInUI('search', path);
+    }
+
+    async function testDownloadPreview() {
+      const id = document.getElementById('dlInputId').value.trim() || 's_oVd9yZ';
+      const box = document.getElementById('json-box-download');
+      const player = document.getElementById('liveAudioPlayer');
+      const btn = document.getElementById('btnDownloadNow');
+      const stat = document.getElementById('status-download');
+      
+      box.style.display = 'block';
+      stat.innerText = 'RESOLVING STREAM...';
+
+      const dlUrl = origin + `/api/download?id=${id}`;
+      document.getElementById('url-download').innerText = dlUrl;
+      document.getElementById('test-download').href = dlUrl;
+
+      try {
+        const detRes = await fetch(`/api/song?id=${id}`);
+        const det = await detRes.json();
+        const stream = det?.data?.stream_urls?.['320kbps'] || det?.data?.stream_urls?.['160kbps'] || dlUrl;
+        
+        player.src = stream;
+        btn.href = dlUrl;
+        stat.innerText = '320KBPS READY';
+      } catch(e) {
+        player.src = dlUrl;
+        btn.href = dlUrl;
+        stat.innerText = 'STREAM LINK GENERATED';
+      }
+    }
+
+    function testLiveLyrics() {
+      const id = document.getElementById('lyricsInputId').value.trim() || 's_oVd9yZ';
+      const path = `/api/lyrics?id=${id}`;
+      document.getElementById('url-lyrics').innerText = origin + path;
+      runInUI('lyrics', path);
     }
   </script>
 </body>
@@ -561,7 +627,7 @@ DOCS_HTML = """<!DOCTYPE html>
 def modern_docs():
     return DOCS_HTML
 
-# 1. DOWNLOAD ENDPOINT
+# 1. BULLETPROOF DOWNLOAD ENDPOINT
 @app.get("/api/download", tags=["Download"])
 def download_song(id: str = Query(..., description="Track ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
@@ -580,7 +646,7 @@ def download_song(id: str = Query(..., description="Track ID")):
         if not download_url:
             raise HTTPException(status_code=500, detail="Audio stream unavailable for download")
         
-        return RedirectResponse(url=download_url)
+        return RedirectResponse(url=download_url, status_code=302)
     except HTTPException:
         raise
     except Exception as e:
@@ -722,10 +788,47 @@ def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
         "songs": [format_song(s) for s in res.get('songs', []) if isinstance(s, dict)]
     }
 
-# 7. LYRICS
+# 7. ENHANCED LYRICS ENGINE (Direct ID + Metadata Resolution Fallback)
 @app.get("/api/lyrics", tags=["Lyrics"])
 def get_lyrics(id: str = Query(..., description="Song ID")):
-    res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
-    if 'lyrics' in res and res['lyrics']:
-        return {"app": "Music X API", "status": "success", "has_lyrics": True, "lyrics": res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')}
-    return {"app": "Music X API", "status": "success", "has_lyrics": False, "lyrics": None, "message": "Lyrics not available"}
+    # Try direct lyrics call
+    try:
+        res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
+        if isinstance(res, dict) and 'lyrics' in res and res['lyrics']:
+            return {
+                "app": "Music X API",
+                "status": "success",
+                "has_lyrics": True,
+                "lyrics": res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')
+            }
+    except Exception:
+        pass
+
+    # Fallback: Retrieve song details to get the actual internal lyrics_id
+    try:
+        d_res = requests.get(BASE_URL, params={'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}, headers=HEADERS, timeout=5).json()
+        song = d_res.get(id) or (d_res.get('songs', [])[0] if d_res.get('songs') else None)
+        if song:
+            more = song.get('more_info', {}) if isinstance(song.get('more_info'), dict) else {}
+            has_lyrics = more.get('has_lyrics') == 'true' or song.get('has_lyrics') == 'true'
+            actual_lyrics_id = more.get('lyrics_id') or id
+            
+            if has_lyrics:
+                lyr_res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': actual_lyrics_id}, headers=HEADERS, timeout=5).json()
+                if isinstance(lyr_res, dict) and 'lyrics' in lyr_res and lyr_res['lyrics']:
+                    return {
+                        "app": "Music X API",
+                        "status": "success",
+                        "has_lyrics": True,
+                        "lyrics": lyr_res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')
+                    }
+    except Exception:
+        pass
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "has_lyrics": False,
+        "lyrics": "Official lyrics are unavailable for this track on the engine.",
+        "message": "Lyrics not available"
+    }
