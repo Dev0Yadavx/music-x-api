@@ -6,13 +6,13 @@ import requests
 from typing import Optional
 from Crypto.Cipher import DES
 from fastapi import FastAPI, Query, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Music X API",
     description="Music x Api Best Music Api all end",
-    version="2.3.0",
+    version="2.5.0",
     docs_url="/swagger",
     redoc_url=None
 )
@@ -34,6 +34,12 @@ HEADERS = {
     'Accept-Language': 'en-IN,en;q=0.9,hi;q=0.8',
     'X-Forwarded-For': '103.241.226.1',
     'CF-IPCountry': 'IN'
+}
+
+CDN_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Referer': 'https://www.jiosaavn.com/',
+    'Range': 'bytes=0-'
 }
 
 def clean_text(text):
@@ -77,7 +83,7 @@ def extract_artists(data):
         
     return "Various Artists"
 
-def decrypt_url(cipher_text):
+def decrypt_raw_url(cipher_text):
     if not cipher_text:
         return None
     try:
@@ -86,40 +92,45 @@ def decrypt_url(cipher_text):
         dec = cipher.decrypt(base64.b64decode(cipher_text))
         pad = dec[-1]
         raw_url = dec[:-pad].decode('utf-8')
-        clean = raw_url.replace('_96.mp4', '').replace('_160.mp4', '').replace('_320.mp4', '')
-        return {
-            "96kbps": f"{clean}_96.mp4",
-            "160kbps": f"{clean}_160.mp4",
-            "320kbps": f"{clean}_320.mp4"
-        }
+        return raw_url
     except Exception:
         return None
 
-def fetch_stream_urls(encrypted_url):
+def get_authorized_stream_url(encrypted_url, bitrate='320'):
+    """Generates authentic signed CDN token to bypass Akamai 403 Forbidden"""
+    if not encrypted_url:
+        return None
+    try:
+        params = {
+            '__call': 'song.generateAuthToken',
+            'url': encrypted_url,
+            'bitrate': str(bitrate),
+            'api_version': '4',
+            '_format': 'json',
+            'ctx': 'web6dot0',
+            '_marker': '0'
+        }
+        res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=5).json()
+        if 'auth_url' in res and res['auth_url']:
+            return res['auth_url']
+    except Exception:
+        pass
+    
+    raw = decrypt_raw_url(encrypted_url)
+    if raw:
+        clean = raw.replace('_96.mp4', '').replace('_160.mp4', '').replace('_320.mp4', '')
+        return f"{clean}_{bitrate}.mp4"
+    return None
+
+def fetch_all_stream_urls(encrypted_url):
     if not encrypted_url:
         return {}
-    local = decrypt_url(encrypted_url)
-    if local:
-        return local
-
-    links = {}
+    urls = {}
     for br in ['320', '160', '96']:
-        try:
-            params = {
-                '__call': 'song.generateAuthToken',
-                'url': encrypted_url,
-                'bitrate': br,
-                'api_version': '4',
-                '_format': 'json',
-                'ctx': 'web6dot0',
-                '_marker': '0'
-            }
-            res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=4).json()
-            if 'auth_url' in res:
-                links[f"{br}kbps"] = res['auth_url']
-        except Exception:
-            pass
-    return links
+        link = get_authorized_stream_url(encrypted_url, br)
+        if link:
+            urls[f"{br}kbps"] = link
+    return urls
 
 def format_song(song):
     if not isinstance(song, dict):
@@ -142,7 +153,7 @@ def format_song(song):
             "medium": img.replace('150x150', '150x150') if img else None,
             "high": img.replace('150x150', '500x500') if img else None
         },
-        "stream_urls": fetch_stream_urls(enc_url)
+        "stream_urls": fetch_all_stream_urls(enc_url)
     }
 
 # ----------------- MODERN LIQUID GLASS DOCS UI ----------------- #
@@ -167,7 +178,6 @@ DOCS_HTML = """<!DOCTYPE html>
       --accent-grad: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #8b5cf6 100%);
       --text: #f8fafc;
       --text-dim: #94a3b8;
-      --success: #10b981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 30px; position: relative; }
@@ -194,7 +204,6 @@ DOCS_HTML = """<!DOCTYPE html>
     .title { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .subtitle { color: #38bdf8; margin-top: 8px; font-size: clamp(0.95rem, 3vw, 1.15rem); font-weight: 600; letter-spacing: -0.01em; }
 
-    /* Base URL Display Box */
     .base-card { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
     .base-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-weight: 700; margin-bottom: 2px; }
     .base-url { font-family: monospace; font-size: 0.95rem; color: #34d399; font-weight: 600; word-break: break-all; }
@@ -207,16 +216,14 @@ DOCS_HTML = """<!DOCTYPE html>
     .btn-test { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; }
     .btn-test:hover { background: rgba(56, 189, 248, 0.25); color: #fff; }
 
-    /* Endpoints Grid */
     .endpoints-grid { display: flex; flex-direction: column; gap: 16px; }
-    .endpoint-card { padding: 18px; transition: transform 0.25s, border-color 0.25s; }
+    .endpoint-card { padding: 18px; transition: border-color 0.25s; }
     .endpoint-card:hover { border-color: rgba(255, 255, 255, 0.22); }
     .ep-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .method-get { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem; letter-spacing: 0.04em; }
     .ep-path { font-size: clamp(1rem, 3.5vw, 1.15rem); font-weight: 700; font-family: monospace; color: #fff; }
     .ep-desc { color: var(--text-dim); font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
 
-    /* Interactive Live Search Input inside Card */
     .search-input-box { display: flex; gap: 8px; margin-bottom: 12px; }
     .search-input-box input { flex: 1; min-width: 0; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 10px; padding: 8px 12px; color: #fff; outline: none; font-size: 0.88rem; }
     .search-input-box input:focus { border-color: var(--accent); }
@@ -225,16 +232,13 @@ DOCS_HTML = """<!DOCTYPE html>
     .url-text { word-break: break-all; flex: 1; min-width: 180px; }
     .action-group { display: flex; gap: 6px; width: auto; }
 
-    /* In-UI JSON / Media Viewer Console */
     .json-viewer-container { display: none; margin-top: 14px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; }
     .json-viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px; }
     .json-output { max-height: 240px; overflow-y: auto; font-family: monospace; font-size: 0.82rem; line-height: 1.6; color: #a5b4fc; white-space: pre-wrap; word-break: break-all; }
 
-    /* Audio Player in Download Console */
     .audio-player-box { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .audio-player-box audio { width: 100%; height: 38px; border-radius: 8px; outline: none; }
 
-    /* Footer Styling */
     footer { margin-top: 40px; padding: 24px 16px; text-align: center; border-radius: 20px; }
     .dev-title { font-size: clamp(0.95rem, 3.5vw, 1.15rem); font-weight: 700; margin-bottom: 14px; background: linear-gradient(135deg, #f43f5e, #fb923c, #eab308, #3b82f6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .social-links { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -264,7 +268,6 @@ DOCS_HTML = """<!DOCTYPE html>
       <p class="subtitle">Music x Api Best Music Api all end</p>
     </header>
 
-    <!-- Base URL Card -->
     <div class="base-card liquid-glass">
       <div>
         <div class="base-title">Active Base Host URL</div>
@@ -276,10 +279,8 @@ DOCS_HTML = """<!DOCTYPE html>
       </button>
     </div>
 
-    <!-- Endpoints Section -->
     <div class="endpoints-grid">
 
-      <!-- 1. Live Interactive Search -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -312,7 +313,6 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 2. Direct Download & Stream Player -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -321,7 +321,7 @@ DOCS_HTML = """<!DOCTYPE html>
           </div>
           <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3 DOWNLOAD</span>
         </div>
-        <div class="ep-desc">Fetches direct 320kbps MP3 stream for direct playback & downloading.</div>
+        <div class="ep-desc">Streams high-bitrate audio directly from backend proxy to bypass Akamai 403 blocks.</div>
         
         <div class="search-input-box">
           <input type="text" id="dlInputId" placeholder="Song ID" value="s_oVd9yZ" />
@@ -338,7 +338,7 @@ DOCS_HTML = """<!DOCTYPE html>
 
         <div class="json-viewer-container" id="json-box-download">
           <div class="json-viewer-header">
-            <span>LIVE MP3 STREAM PLAYER</span>
+            <span>LIVE AUDIO STREAM</span>
             <span id="status-download">READY</span>
           </div>
           <div class="audio-player-box">
@@ -348,7 +348,6 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 3. Lyrics Endpoint -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -360,7 +359,7 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="ep-desc">Extract official track lyrics with synced line breaks & proper paragraphs.</div>
         
         <div class="search-input-box">
-          <input type="text" id="lyricsInputId" placeholder="Song ID (e.g. s_oVd9yZ)" value="s_oVd9yZ" />
+          <input type="text" id="lyricsInputId" placeholder="Song ID" value="s_oVd9yZ" />
           <button class="btn btn-test" onclick="testLiveLyrics()">Fetch Lyrics</button>
         </div>
 
@@ -380,16 +379,15 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 4. Song Details -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
             <span class="ep-path">/api/song</span>
           </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">320kbps CDN</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">320kbps Signed CDN</span>
         </div>
-        <div class="ep-desc">Retrieve metadata and decrypted playable CDN streaming URLs.</div>
+        <div class="ep-desc">Retrieve metadata and signed authorized playable CDN streaming URLs.</div>
         <div class="url-preview">
           <span class="url-text" id="url-song">/api/song?id=s_oVd9yZ</span>
           <div class="action-group">
@@ -406,7 +404,6 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 5. Trending Charts -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -432,7 +429,6 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 6. Artist Profile -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -458,7 +454,6 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 7. Playlists -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -486,7 +481,6 @@ DOCS_HTML = """<!DOCTYPE html>
 
     </div>
 
-    <!-- Liquid Glass Custom Footer -->
     <footer class="liquid-glass">
       <div class="dev-title">Dev:BY-—͟͞͞ 𝙔ᴀᴅᴀᴠ<\>x- 🇮🇳𒌋ᥫ᭡</div>
       <div class="social-links">
@@ -494,7 +488,7 @@ DOCS_HTML = """<!DOCTYPE html>
           <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
           Telegram
         </a>
-        <a href="https://github.com/ayashisheditingbahira9356-maker" target="_blank" class="social-badge">
+        <a href="https://github.com/Dev0Yadavx/music-x-api" target="_blank" class="social-badge">
           <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
           GitHub
         </a>
@@ -594,19 +588,9 @@ DOCS_HTML = """<!DOCTYPE html>
       document.getElementById('url-download').innerText = dlUrl;
       document.getElementById('test-download').href = dlUrl;
 
-      try {
-        const detRes = await fetch(`/api/song?id=${id}`);
-        const det = await detRes.json();
-        const stream = det?.data?.stream_urls?.['320kbps'] || det?.data?.stream_urls?.['160kbps'] || dlUrl;
-        
-        player.src = stream;
-        btn.href = dlUrl;
-        stat.innerText = '320KBPS READY';
-      } catch(e) {
-        player.src = dlUrl;
-        btn.href = dlUrl;
-        stat.innerText = 'STREAM LINK GENERATED';
-      }
+      player.src = dlUrl;
+      btn.href = dlUrl;
+      stat.innerText = '320KBPS PROXY STREAM READY';
     }
 
     function testLiveLyrics() {
@@ -627,7 +611,7 @@ DOCS_HTML = """<!DOCTYPE html>
 def modern_docs():
     return DOCS_HTML
 
-# 1. BULLETPROOF DOWNLOAD ENDPOINT
+# 1. STREAMING & DOWNLOAD PROXY (BYPASSES AKAMAI 403 COMPLETELY)
 @app.get("/api/download", tags=["Download"])
 def download_song(id: str = Query(..., description="Track ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
@@ -640,13 +624,30 @@ def download_song(id: str = Query(..., description="Track ID")):
         more = song.get('more_info', {}) if isinstance(song.get('more_info'), dict) else {}
         enc_url = more.get('encrypted_media_url') or song.get('encrypted_media_url')
         
-        stream_urls = fetch_stream_urls(enc_url)
-        download_url = stream_urls.get('320kbps') or stream_urls.get('160kbps') or stream_urls.get('96kbps')
+        # Get authorized Akamai stream URL
+        stream_url = get_authorized_stream_url(enc_url, '320') or get_authorized_stream_url(enc_url, '160')
         
-        if not download_url:
-            raise HTTPException(status_code=500, detail="Audio stream unavailable for download")
+        if not stream_url:
+            raise HTTPException(status_code=500, detail="Audio stream unavailable")
         
-        return RedirectResponse(url=download_url, status_code=302)
+        # Fetch stream from CDN with proper Referer & Range headers
+        cdn_req = requests.get(stream_url, headers=CDN_HEADERS, stream=True, timeout=10)
+        if cdn_req.status_code not in [200, 206]:
+            # Fallback redirect if CDN denies proxy
+            return RedirectResponse(url=stream_url)
+            
+        track_title = clean_text(song.get('title') or song.get('song') or 'Track')
+        safe_filename = "".join(c for c in track_title if c.isalnum() or c in (' ', '_', '-')).strip() or 'track'
+
+        # Proxy stream directly to user with audio headers
+        return StreamingResponse(
+            cdn_req.iter_content(chunk_size=65536),
+            media_type="audio/mp4",
+            headers={
+                "Content-Disposition": f'attachment; filename="{safe_filename}.mp3"',
+                "Accept-Ranges": "bytes"
+            }
+        )
     except HTTPException:
         raise
     except Exception as e:
@@ -788,10 +789,9 @@ def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
         "songs": [format_song(s) for s in res.get('songs', []) if isinstance(s, dict)]
     }
 
-# 7. ENHANCED LYRICS ENGINE (Direct ID + Metadata Resolution Fallback)
+# 7. LYRICS ENGINE
 @app.get("/api/lyrics", tags=["Lyrics"])
 def get_lyrics(id: str = Query(..., description="Song ID")):
-    # Try direct lyrics call
     try:
         res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
         if isinstance(res, dict) and 'lyrics' in res and res['lyrics']:
@@ -804,7 +804,6 @@ def get_lyrics(id: str = Query(..., description="Song ID")):
     except Exception:
         pass
 
-    # Fallback: Retrieve song details to get the actual internal lyrics_id
     try:
         d_res = requests.get(BASE_URL, params={'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}, headers=HEADERS, timeout=5).json()
         song = d_res.get(id) or (d_res.get('songs', [])[0] if d_res.get('songs') else None)
