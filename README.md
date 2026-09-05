@@ -1,6 +1,6 @@
 # 🎵 Music X API
 
-High-speed 24/7 REST API for JioSaavn song search, 320kbps audio decryption, playlist extraction, and lyrics.
+High-speed 24/7 REST API for Music x song search, 320kbps audio decryption, playlist extraction, and lyrics.
 
 ## 🚀 Endpoints
 - `GET /docs` - Interactive Swagger UI Documentation
@@ -12,4 +12,4 @@ High-speed 24/7 REST API for JioSaavn song search, 320kbps audio decryption, pla
 - `GET /api/lyrics?id={song_id}` - Raw & synced lyrics
 
 ## 📦 Deployment
-Ready for 1-click deployment on Railway.app, Render, or Docker.
+Ready for 1-click deployment on Railway.app, Render, or Docker.Ver
