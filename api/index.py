@@ -11,8 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Music X API",
-    description="24/7 JioSaavn High-Speed Streaming & Metadata Gateway",
-    version="1.0.0",
+    description="Production-ready JioSaavn API with Official App Search Matching",
+    version="1.1.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -26,10 +26,14 @@ app.add_middleware(
 )
 
 BASE_URL = "https://www.jiosaavn.com/api.php"
+
+# Official App headers + Multi-language cookies taaki regional tracks drop na hon
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Referer': 'https://www.jiosaavn.com/',
-    'Accept': '*/*'
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8',
+    'Cookie': 'L=hindi%2Cenglish%2Cpunjabi%2Cbhojpuri%2Ctamil%2Ctelugu%2Charyanvi%2Cmarathi%2Cgujarati%2Cbengali;'
 }
 
 def clean_text(text):
@@ -133,17 +137,94 @@ def format_song(song):
         "stream_urls": fetch_stream_urls(enc_url)
     }
 
-@app.get("/")
+def get_songs_by_ids(id_list):
+    """Fetch complete metadata and stream keys using comma-separated IDs"""
+    if not id_list:
+        return []
+    try:
+        params = {
+            '__call': 'song.getDetails',
+            '_format': 'json',
+            '_marker': '0',
+            'pids': ",".join(id_list[:20])
+        }
+        res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=7).json()
+        songs = []
+        if isinstance(res, dict):
+            if 'songs' in res and isinstance(res['songs'], list):
+                songs = res['songs']
+            else:
+                for k, v in res.items():
+                    if isinstance(v, dict) and 'id' in v:
+                        songs.append(v)
+        return [format_song(s) for s in songs]
+    except Exception:
+        return []
+
+@app.get("/", include_in_schema=False)
 def root():
     return RedirectResponse(url="/docs")
 
-@app.get("/api/search")
+@app.get("/api/search", tags=["Search"])
 def search_songs(q: str = Query(..., description="Query term"), page: int = 1, limit: int = 15):
-    params = {'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': str(page), 'n': str(limit), 'q': q}
-    res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
-    return {"app": "Music X API", "status": "success", "total": res.get('total', 0), "data": [format_song(s) for s in res.get('results', [])]}
+    """
+    Dual Engine Search:
+    1. App AutoComplete Engine (catches misspelled and newest app-exclusive releases)
+    2. Fallback to Full Catalog Search
+    """
+    final_songs = []
+    seen_ids = set()
 
-@app.get("/api/song")
+    # Tier 1: Official App Typeahead Autocomplete Search
+    try:
+        ac_params = {
+            '__call': 'autocomplete.get',
+            '_format': 'json',
+            '_marker': '0',
+            'query': q
+        }
+        ac_res = requests.get(BASE_URL, params=ac_params, headers=HEADERS, timeout=5).json()
+        song_candidates = ac_res.get('songs', {}).get('data', [])
+        ac_ids = [s.get('id') for s in song_candidates if s.get('id')]
+
+        if ac_ids:
+            detailed_songs = get_songs_by_ids(ac_ids)
+            for s in detailed_songs:
+                if s.get('id') and s['id'] not in seen_ids:
+                    seen_ids.add(s['id'])
+                    final_songs.append(s)
+    except Exception:
+        pass
+
+    # Tier 2: Deep Catalog Search (adds extra results and handles pagination)
+    try:
+        params = {
+            '__call': 'search.getResults',
+            '_format': 'json',
+            '_marker': '0',
+            'api_version': '4',
+            'p': str(page),
+            'n': str(limit),
+            'q': q
+        }
+        res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=7).json()
+        raw = res.get('results', [])
+        for r in raw:
+            formatted = format_song(r)
+            if formatted.get('id') and formatted['id'] not in seen_ids:
+                seen_ids.add(formatted['id'])
+                final_songs.append(formatted)
+    except Exception:
+        pass
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "total": len(final_songs),
+        "data": final_songs[:limit]
+    }
+
+@app.get("/api/song", tags=["Streams & Details"])
 def get_song(id: str = Query(..., description="Song ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
     res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=6).json()
@@ -152,7 +233,7 @@ def get_song(id: str = Query(..., description="Song ID")):
         raise HTTPException(status_code=404, detail="Song not found")
     return {"app": "Music X API", "status": "success", "data": format_song(song)}
 
-@app.get("/api/trending")
+@app.get("/api/trending", tags=["Trending"])
 def get_trending():
     params = {'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4'}
     res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
@@ -163,7 +244,7 @@ def get_trending():
         songs = res.get('results', [])
     return {"app": "Music X API", "status": "success", "data": [format_song(s) for s in songs[:15]]}
 
-@app.get("/api/artist")
+@app.get("/api/artist", tags=["Artist"])
 def get_artist(name: Optional[str] = None, id: Optional[str] = None):
     if not name and not id:
         raise HTTPException(status_code=400, detail="Provide either name or id")
@@ -186,7 +267,7 @@ def get_artist(name: Optional[str] = None, id: Optional[str] = None):
         "top_songs": [format_song(s) for s in top_songs if isinstance(s, dict)]
     }
 
-@app.get("/api/playlist")
+@app.get("/api/playlist", tags=["Playlists"])
 def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
     if not q and not id:
         raise HTTPException(status_code=400, detail="Provide either q or id")
@@ -206,7 +287,7 @@ def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
         "songs": [format_song(s) for s in res.get('songs', []) if isinstance(s, dict)]
     }
 
-@app.get("/api/lyrics")
+@app.get("/api/lyrics", tags=["Lyrics"])
 def get_lyrics(id: str = Query(..., description="Track ID")):
     res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
     if 'lyrics' in res and res['lyrics']:
