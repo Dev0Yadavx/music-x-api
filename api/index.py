@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
     title="Music X API",
     description="Music x Api Best Music Api all end",
-    version="4.5.0",
+    version="5.0.0",
     docs_url="/swagger",
     redoc_url=None
 )
@@ -172,9 +172,8 @@ DOCS_HTML = """<!DOCTYPE html>
       --accent-grad: linear-gradient(135deg, #6366f1 0%, #ec4899 50%, #8b5cf6 100%);
       --text: #f8fafc;
       --text-dim: #94a3b8;
-      --success: #10b981;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 30px; position: relative; }
     
     .ambient-orb { position: fixed; border-radius: 50%; filter: blur(95px); pointer-events: none; z-index: 0; }
@@ -191,7 +190,6 @@ DOCS_HTML = """<!DOCTYPE html>
     }
 
     .container { width: 100%; max-width: 980px; margin: 0 auto; padding: 24px 16px 20px; position: relative; z-index: 1; }
-
     header { text-align: center; margin-bottom: 28px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 12px; }
     .title { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -253,19 +251,67 @@ DOCS_HTML = """<!DOCTYPE html>
 
     <div class="endpoints-grid">
 
-      <!-- 1. Search -->
+      <!-- 1. Daily New Releases (Auto Bhojpuri & Hindi) -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/releases</span>
+          </div>
+          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ DAILY AUTO NEW RELEASES</span>
+        </div>
+        <div class="ep-desc">Auto fetches fresh daily releases. Filter dynamically by language: 'hindi', 'bhojpuri', or 'all'.</div>
+        <div class="input-control-box">
+          <span class="input-label">?language=</span>
+          <input type="text" id="param-releases" class="custom-input" value="bhojpuri" oninput="updateUrl('releases')" placeholder="bhojpuri, hindi, or all" />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-releases">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('releases')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('releases')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-releases"><div class="json-output" id="out-releases"></div></div>
+      </div>
+
+      <!-- 2. Auto Queue / Similar Songs Engine -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/recommend</span>
+          </div>
+          <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">★ AUTO QUEUE & SIMILAR ARTISTS</span>
+        </div>
+        <div class="ep-desc">Auto recommendation engine for seamless autoplay queue based on current song's artist & genre.</div>
+        <div class="input-control-box">
+          <span class="input-label">?id=</span>
+          <input type="text" id="param-recommend" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('recommend')" placeholder="Track ID..." />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-recommend">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('recommend')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('recommend')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-recommend"><div class="json-output" id="out-recommend"></div></div>
+      </div>
+
+      <!-- 3. Global Search -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
             <span class="ep-path">/api/search</span>
           </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Global Search</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Search Engine</span>
         </div>
-        <div class="ep-desc">Search tracks, movie soundtracks, and artists in real time.</div>
+        <div class="ep-desc">Search songs, movie soundtracks, and singers in real time.</div>
         <div class="input-control-box">
           <span class="input-label">?q=</span>
-          <input type="text" id="param-search" class="custom-input" value="Kesariya" oninput="updateUrl('search')" />
+          <input type="text" id="param-search" class="custom-input" value="Pawan Singh" oninput="updateUrl('search')" />
         </div>
         <div class="url-preview">
           <span class="url-text" id="url-search">...</span>
@@ -277,40 +323,16 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="json-viewer-container" id="box-search"><div class="json-output" id="out-search"></div></div>
       </div>
 
-      <!-- 2. Playlists (FIXED) -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/playlist</span>
-          </div>
-          <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">★ FULL TRACKLIST</span>
-        </div>
-        <div class="ep-desc">Search and unpack complete playlist tracks by title query (e.g. Hindi, Romance, Sad) or Playlist ID.</div>
-        <div class="input-control-box">
-          <span class="input-label">?q=</span>
-          <input type="text" id="param-playlist" class="custom-input" value="Hindi Romance" oninput="updateUrl('playlist')" />
-        </div>
-        <div class="url-preview">
-          <span class="url-text" id="url-playlist">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('playlist')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('playlist')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-playlist"><div class="json-output" id="out-playlist"></div></div>
-      </div>
-
-      <!-- 3. Download / Stream -->
+      <!-- 4. Download / Fast Stream -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
             <span class="ep-path">/api/download</span>
           </div>
-          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">320kbps MP3</span>
         </div>
-        <div class="ep-desc">High-speed streaming & direct MP3 download proxy.</div>
+        <div class="ep-desc">Streams & triggers high-speed MP3 download proxy.</div>
         <div class="input-control-box">
           <span class="input-label">?id=</span>
           <input type="text" id="param-download" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('download')" />
@@ -324,96 +346,28 @@ DOCS_HTML = """<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- 4. Lyrics -->
+      <!-- 5. Playlists -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
-            <span class="ep-path">/api/lyrics</span>
+            <span class="ep-path">/api/playlist</span>
           </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Lyrics</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Playlists</span>
         </div>
-        <div class="ep-desc">Official track lyrics with synced line breaks.</div>
+        <div class="ep-desc">Unpack complete playlist tracks by title query (e.g. Bhojpuri Hits, Hindi Romance).</div>
         <div class="input-control-box">
-          <span class="input-label">?id=</span>
-          <input type="text" id="param-lyrics" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('lyrics')" />
+          <span class="input-label">?q=</span>
+          <input type="text" id="param-playlist" class="custom-input" value="Bhojpuri Top 50" oninput="updateUrl('playlist')" />
         </div>
         <div class="url-preview">
-          <span class="url-text" id="url-lyrics">...</span>
+          <span class="url-text" id="url-playlist">...</span>
           <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('lyrics')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('lyrics')">Copy</button>
+            <button class="btn btn-test" onclick="executeTest('playlist')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('playlist')">Copy</button>
           </div>
         </div>
-        <div class="json-viewer-container" id="box-lyrics"><div class="json-output" id="out-lyrics" style="color:#fde047; line-height:1.8;"></div></div>
-      </div>
-
-      <!-- 5. Song Details -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/song</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Signed Stream</span>
-        </div>
-        <div class="ep-desc">Metadata and signed playable CDN streaming URLs.</div>
-        <div class="input-control-box">
-          <span class="input-label">?id=</span>
-          <input type="text" id="param-song" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('song')" />
-        </div>
-        <div class="url-preview">
-          <span class="url-text" id="url-song">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('song')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('song')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-song"><div class="json-output" id="out-song"></div></div>
-      </div>
-
-      <!-- 6. Trending -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/trending</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Top Charts</span>
-        </div>
-        <div class="ep-desc">Official Top Trending tracks currently featured on home charts.</div>
-        <div class="url-preview">
-          <span class="url-text" id="url-trending">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('trending')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('trending')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-trending"><div class="json-output" id="out-trending"></div></div>
-      </div>
-
-      <!-- 7. Artist -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/artist</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Artist Info</span>
-        </div>
-        <div class="ep-desc">Get singer biography, HD profile pictures, and popular top songs.</div>
-        <div class="input-control-box">
-          <span class="input-label">?name=</span>
-          <input type="text" id="param-artist" class="custom-input" value="Arijit Singh" oninput="updateUrl('artist')" />
-        </div>
-        <div class="url-preview">
-          <span class="url-text" id="url-artist">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('artist')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('artist')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-artist"><div class="json-output" id="out-artist"></div></div>
+        <div class="json-viewer-container" id="box-playlist"><div class="json-output" id="out-playlist"></div></div>
       </div>
 
     </div>
@@ -433,13 +387,11 @@ DOCS_HTML = """<!DOCTYPE html>
     document.getElementById('baseUrlText').innerText = origin;
 
     const routes = {
+      'releases': (val) => `/api/releases?language=${encodeURIComponent(val)}&limit=15`,
+      'recommend': (val) => `/api/recommend?id=${encodeURIComponent(val)}&limit=10`,
       'search': (val) => `/api/search?q=${encodeURIComponent(val)}&limit=5`,
-      'playlist': (val) => `/api/playlist?q=${encodeURIComponent(val)}`,
       'download': (val) => `/api/download?id=${encodeURIComponent(val)}`,
-      'lyrics': (val) => `/api/lyrics?id=${encodeURIComponent(val)}`,
-      'song': (val) => `/api/song?id=${encodeURIComponent(val)}`,
-      'trending': () => `/api/trending`,
-      'artist': (val) => `/api/artist?name=${encodeURIComponent(val)}`
+      'playlist': (val) => `/api/playlist?q=${encodeURIComponent(val)}`
     };
 
     function updateUrl(key) {
@@ -462,7 +414,7 @@ DOCS_HTML = """<!DOCTYPE html>
     function copyDynamicUrl(key) {
       const text = document.getElementById('url-' + key).innerText;
       navigator.clipboard.writeText(text);
-      alert('Copied!');
+      alert('Copied URL!');
     }
 
     async function executeTest(key) {
@@ -473,18 +425,14 @@ DOCS_HTML = """<!DOCTYPE html>
       const path = routes[key](val);
 
       box.style.display = 'block';
-      out.innerText = '// Fetching live response from Music X Engine...';
+      out.innerText = '// Engine fetching data...';
 
       try {
         const res = await fetch(path);
         const data = await res.json();
-        if (key === 'lyrics' && data.lyrics) {
-          out.innerText = data.lyrics;
-        } else {
-          out.innerText = JSON.stringify(data, null, 2);
-        }
+        out.innerText = JSON.stringify(data, null, 2);
       } catch(err) {
-        out.innerText = '// Request error: ' + err.message;
+        out.innerText = '// Error: ' + err.message;
       }
     }
   </script>
@@ -499,7 +447,121 @@ DOCS_HTML = """<!DOCTYPE html>
 def modern_docs():
     return DOCS_HTML
 
-# 1. BULLETPROOF DOWNLOAD & STREAMING
+# 1. DAILY NEW RELEASES (AUTO FETCH & FILTER BHOJPURI / HINDI)
+@app.get("/api/releases", tags=["Discovery"])
+def get_daily_new_releases(language: str = Query("all", description="Language filter: 'hindi', 'bhojpuri', or 'all'"), limit: int = 20):
+    lang_clean = language.lower().strip()
+    collected_songs = []
+
+    # Method A: Launch Data se latest fresh releases lena
+    try:
+        res = requests.get(BASE_URL, params={'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0'}, headers=HEADERS, timeout=7).json()
+        new_albums = res.get('new_albums', [])
+        
+        # Har naye album ke tracks auto unpack karein
+        for alb in new_albums[:6]:
+            alb_id = alb.get('id')
+            if alb_id:
+                try:
+                    alb_det = requests.get(BASE_URL, params={'__call': 'content.getAlbumDetails', '_format': 'json', '_marker': '0', 'albumid': str(alb_id)}, headers=HEADERS, timeout=4).json()
+                    songs = alb_det.get('songs', [])
+                    if isinstance(songs, list):
+                        for s in songs:
+                            s_lang = (s.get('language') or '').lower()
+                            if lang_clean == 'all' or lang_clean in s_lang:
+                                collected_songs.append(format_song(s))
+                except Exception:
+                    continue
+    except Exception:
+        pass
+
+    # Method B: Search fallback for fresh releases
+    if len(collected_songs) < 10:
+        query_map = {
+            'bhojpuri': 'Latest Bhojpuri New Releases 2026',
+            'hindi': 'Latest Hindi New Releases 2026',
+            'all': 'Latest Indian New Releases 2026'
+        }
+        target_q = query_map.get(lang_clean, f'Latest {language} New Releases 2026')
+        try:
+            s_res = requests.get(BASE_URL, params={'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': '1', 'n': str(limit), 'q': target_q}, headers=HEADERS, timeout=6).json()
+            results = s_res.get('results', [])
+            for s in results:
+                formatted = format_song(s)
+                if not any(x['id'] == formatted['id'] for x in collected_songs):
+                    collected_songs.append(formatted)
+        except Exception:
+            pass
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "category": f"Daily New Releases ({language.upper()})",
+        "total": len(collected_songs[:limit]),
+        "data": collected_songs[:limit]
+    }
+
+# 2. AUTO QUEUE & SIMILAR ARTIST RECOMMENDATION ENGINE
+@app.get("/api/recommend", tags=["Discovery"])
+def get_song_recommendations(id: str = Query(..., description="Currently playing Song ID"), limit: int = 15):
+    # Step 1: Current playing song ki details fetch karein
+    params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
+    try:
+        res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=6).json()
+        current_song = res.get(id) or (res.get('songs', [])[0] if res.get('songs') else None)
+        if not current_song:
+            raise HTTPException(status_code=404, detail="Original song ID not found")
+        
+        more = current_song.get('more_info', {}) if isinstance(current_song.get('more_info'), dict) else {}
+        primary_artist = extract_artists(current_song).split(',')[0].strip()
+        song_lang = current_song.get('language') or more.get('language') or 'hindi'
+        song_title = clean_text(current_song.get('title') or current_song.get('song'))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to resolve current track: {str(e)}")
+
+    recommended_songs = []
+
+    # Step 2: Same Singer / Similar Artist se tracks fetch karein
+    if primary_artist and primary_artist != "Various Artists":
+        try:
+            # Artist ke top charts
+            art_res = requests.get(BASE_URL, params={'__call': 'search.getArtistResults', '_format': 'json', '_marker': '0', 'p': '1', 'n': '1', 'q': primary_artist}, headers=HEADERS, timeout=5).json()
+            art_list = art_res.get('results', [])
+            if art_list:
+                art_id = art_list[0].get('artistid') or art_list[0].get('id')
+                page_res = requests.get(BASE_URL, params={'__call': 'artist.getArtistPageDetails', '_format': 'json', '_marker': '0', 'artistId': art_id}, headers=HEADERS, timeout=5).json()
+                top_songs = page_res.get('topSongs', [])
+                if isinstance(top_songs, dict):
+                    top_songs = top_songs.get('songs', [])
+                for s in top_songs:
+                    if s.get('id') != id:
+                        recommended_songs.append(format_song(s))
+        except Exception:
+            pass
+
+    # Step 3: Genre & Language auto-queue fallback
+    if len(recommended_songs) < limit:
+        try:
+            s_res = requests.get(BASE_URL, params={'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': '1', 'n': str(limit), 'q': f"Best of {primary_artist} {song_lang}"}, headers=HEADERS, timeout=5).json()
+            for s in s_res.get('results', []):
+                if s.get('id') != id and not any(x['id'] == s.get('id') for x in recommended_songs):
+                    recommended_songs.append(format_song(s))
+        except Exception:
+            pass
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "based_on": {
+            "title": song_title,
+            "artist": primary_artist,
+            "language": song_lang
+        },
+        "total": len(recommended_songs[:limit]),
+        "queue": recommended_songs[:limit]
+    }
+
+# 3. FAST STREAMING & DOWNLOAD PROXY
 @app.get("/api/download", tags=["Download"])
 def stream_or_download_song(id: str = Query(..., description="Track ID"), request: Request = None):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
@@ -520,7 +582,6 @@ def stream_or_download_song(id: str = Query(..., description="Track ID"), reques
             'User-Agent': HEADERS['User-Agent'],
             'Referer': 'https://www.jiosaavn.com/'
         }
-        
         range_header = request.headers.get('Range') if request else None
         if range_header:
             fwd_headers['Range'] = range_header
@@ -559,85 +620,69 @@ def stream_or_download_song(id: str = Query(..., description="Track ID"), reques
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 2. PLAYLIST ENGINE (FULLY FIXED WITH RECURSIVE DETAILS RESOLUTION)
+# 4. SEARCH
+@app.get("/api/search", tags=["Search"])
+def search_songs(q: str = Query(..., description="Song name"), page: int = 1, limit: int = 20):
+    raw_results = []
+    params = {'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0', 'p': str(page), 'n': str(limit), 'q': q}
+    try:
+        r = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
+        raw_results = r.get('results', [])
+    except Exception:
+        raw_results = []
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "total": len(raw_results),
+        "data": [format_song(s) for s in raw_results if isinstance(s, dict)]
+    }
+
+# 5. PLAYLISTS
 @app.get("/api/playlist", tags=["Playlists"])
 def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
     if not q and not id:
-        raise HTTPException(status_code=400, detail="Provide either 'q' (search term) or 'id'")
+        raise HTTPException(status_code=400, detail="Provide either 'q' or 'id'")
     
     list_id = id
     list_token = None
 
-    # Step A: Agar query di hai toh search karein
     if q and not list_id:
-        search_params = {
-            '__call': 'search.getPlaylistResults',
-            '_format': 'json',
-            '_marker': '0',
-            'api_version': '4',
-            'ctx': 'web6dot0',
-            'p': '1',
-            'n': '10',
-            'q': q
-        }
         try:
-            s_res = requests.get(BASE_URL, params=search_params, headers=HEADERS, timeout=8).json()
+            s_res = requests.get(BASE_URL, params={'__call': 'search.getPlaylistResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': '1', 'n': '5', 'q': q}, headers=HEADERS, timeout=8).json()
             results = s_res.get('results', []) or s_res.get('data', {}).get('results', [])
             if not results:
-                raise HTTPException(status_code=404, detail=f"No playlists found matching '{q}'")
-            
+                raise HTTPException(status_code=404, detail=f"No playlist found for '{q}'")
             matched = results[0]
             list_id = matched.get('id') or matched.get('listid')
-            # Token perma_url fallback
             perma = matched.get('perma_url', '')
             if perma and '/' in perma:
                 list_token = perma.rstrip('/').split('/')[-1]
         except HTTPException:
             raise
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Playlist search error: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
 
-    # Step B: Playlist details fetch karein
     details_res = None
-
-    # Method 1: List ID dwara
     if list_id:
-        det_params = {
-            '__call': 'playlist.getDetails',
-            '_format': 'json',
-            '_marker': '0',
-            'api_version': '4',
-            'ctx': 'web6dot0',
-            'listid': str(list_id)
-        }
         try:
-            r = requests.get(BASE_URL, params=det_params, headers=HEADERS, timeout=8).json()
+            r = requests.get(BASE_URL, params={'__call': 'playlist.getDetails', '_format': 'json', '_marker': '0', 'api_version': '4', 'listid': str(list_id)}, headers=HEADERS, timeout=8).json()
             if isinstance(r, dict) and (r.get('songs') or r.get('list')):
                 details_res = r
         except Exception:
             pass
 
-    # Method 2: Token / Perma URL dwara agar listid se songs na mile hon
     if (not details_res or not details_res.get('songs')) and (list_token or list_id):
         token_to_use = list_token or str(list_id)
-        token_params = {
-            '__call': 'webapi.get',
-            'token': token_to_use,
-            'type': 'playlist',
-            '_format': 'json',
-            '_marker': '0',
-            'api_version': '4',
-            'ctx': 'web6dot0'
-        }
         try:
-            r = requests.get(BASE_URL, params=token_params, headers=HEADERS, timeout=8).json()
+            r = requests.get(BASE_URL, params={'__call': 'webapi.get', 'token': token_to_use, 'type': 'playlist', '_format': 'json', '_marker': '0', 'api_version': '4'}, headers=HEADERS, timeout=8).json()
             if isinstance(r, dict) and (r.get('songs') or r.get('list')):
                 details_res = r
         except Exception:
             pass
 
-    if not details_res or not isinstance(details_res, dict):
-        raise HTTPException(status_code=404, detail="Playlist details could not be loaded")
+    if not details_res:
+        raise HTTPException(status_code=404, detail="Playlist tracks could not be unpacked")
 
     raw_songs = details_res.get('songs', []) or details_res.get('list', [])
     if isinstance(raw_songs, dict):
@@ -650,39 +695,12 @@ def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
             "id": details_res.get('id') or list_id,
             "title": clean_text(details_res.get('title') or details_res.get('name')),
             "total_tracks": int(details_res.get('list_count') or len(raw_songs)),
-            "header_desc": clean_text(details_res.get('header_desc')),
             "image": (details_res.get('image') or '').replace('150x150', '500x500')
         },
         "songs": [format_song(s) for s in raw_songs if isinstance(s, dict)]
     }
 
-# 3. SEARCH
-@app.get("/api/search", tags=["Search"])
-def search_songs(q: str = Query(..., description="Song name"), page: int = 1, limit: int = 20):
-    raw_results = []
-    params = {'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0', 'p': str(page), 'n': str(limit), 'q': q}
-    try:
-        r = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
-        raw_results = r.get('results', [])
-    except Exception:
-        raw_results = []
-
-    if not raw_results:
-        try:
-            params_more = {'__call': 'search.getMoreResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0', 'query': q, 'params': json.dumps({'type': 'song'}), 'p': str(page), 'n': str(limit)}
-            r_more = requests.get(BASE_URL, params=params_more, headers=HEADERS, timeout=8).json()
-            raw_results = r_more.get('results', [])
-        except Exception:
-            pass
-
-    return {
-        "app": "Music X API",
-        "status": "success",
-        "total": len(raw_results),
-        "data": [format_song(s) for s in raw_results if isinstance(s, dict)]
-    }
-
-# 4. SONG DETAILS
+# 6. SONG DETAILS
 @app.get("/api/song", tags=["Streams"])
 def get_song(id: str = Query(..., description="Track ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
@@ -697,88 +715,13 @@ def get_song(id: str = Query(..., description="Track ID")):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 5. TRENDING
-@app.get("/api/trending", tags=["Trending"])
-def get_trending():
-    params = {'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0'}
-    try:
-        res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
-        trending = res.get('new_trending', [])
-        songs = [t for t in trending if isinstance(t, dict) and t.get('type') == 'song']
-        if not songs:
-            r = requests.get(BASE_URL, params={'__call': 'search.getResults', '_format': 'json', '_marker': '0', 'api_version': '4', 'p': '1', 'n': '15', 'q': 'Top Trending Hindi'}, headers=HEADERS).json()
-            songs = r.get('results', [])
-        return {"app": "Music X API", "status": "success", "data": [format_song(s) for s in songs[:15]]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-# 6. LYRICS
+# 7. LYRICS
 @app.get("/api/lyrics", tags=["Lyrics"])
 def get_lyrics(id: str = Query(..., description="Song ID")):
     try:
         res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': id}, headers=HEADERS, timeout=5).json()
         if isinstance(res, dict) and res.get('lyrics'):
-            return {
-                "app": "Music X API",
-                "status": "success",
-                "has_lyrics": True,
-                "lyrics": res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')
-            }
+            return {"app": "Music X API", "status": "success", "has_lyrics": True, "lyrics": res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')}
     except Exception:
         pass
-
-    try:
-        d_res = requests.get(BASE_URL, params={'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}, headers=HEADERS, timeout=5).json()
-        song = d_res.get(id) or (d_res.get('songs', [])[0] if d_res.get('songs') else None)
-        if song:
-            more = song.get('more_info', {}) if isinstance(song.get('more_info'), dict) else {}
-            has_lyrics = more.get('has_lyrics') == 'true' or song.get('has_lyrics') == 'true'
-            actual_lyrics_id = more.get('lyrics_id') or id
-            if has_lyrics:
-                lyr_res = requests.get(BASE_URL, params={'__call': 'lyrics.getLyrics', '_format': 'json', '_marker': '0', 'lyrics_id': actual_lyrics_id}, headers=HEADERS, timeout=5).json()
-                if isinstance(lyr_res, dict) and lyr_res.get('lyrics'):
-                    return {
-                        "app": "Music X API",
-                        "status": "success",
-                        "has_lyrics": True,
-                        "lyrics": lyr_res['lyrics'].replace('<br>', '\n').replace('<br/>', '\n')
-                    }
-    except Exception:
-        pass
-
-    return {
-        "app": "Music X API",
-        "status": "success",
-        "has_lyrics": False,
-        "lyrics": "Lyrics unavailable for this track.",
-        "message": "Lyrics not available"
-    }
-
-# 7. ARTIST PROFILE
-@app.get("/api/artist", tags=["Artist"])
-def get_artist(name: Optional[str] = None, id: Optional[str] = None):
-    if not name and not id:
-        raise HTTPException(status_code=400, detail="Provide either 'name' or 'id'")
-    artist_id = id
-    if name and not artist_id:
-        s_res = requests.get(BASE_URL, params={'__call': 'search.getArtistResults', '_format': 'json', '_marker': '0', 'p': '1', 'n': '1', 'q': name}, headers=HEADERS).json()
-        results = s_res.get('results', [])
-        if not results:
-            raise HTTPException(status_code=404, detail="Artist not found")
-        artist_id = results[0].get('artistid') or results[0].get('id')
-
-    res = requests.get(BASE_URL, params={'__call': 'artist.getArtistPageDetails', '_format': 'json', '_marker': '0', 'artistId': artist_id}, headers=HEADERS).json()
-    top_songs = res.get('topSongs', [])
-    if isinstance(top_songs, dict):
-        top_songs = top_songs.get('songs', [])
-    return {
-        "app": "Music X API",
-        "status": "success",
-        "artist": {
-            "id": artist_id,
-            "name": clean_text(res.get('name')),
-            "role": clean_text(res.get('role')),
-            "image": res.get('image', '').replace('150x150', '500x500')
-        },
-        "top_songs": [format_song(s) for s in top_songs if isinstance(s, dict)]
-    }
+    return {"app": "Music X API", "status": "success", "has_lyrics": False, "lyrics": "Lyrics unavailable for this track."}
