@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(
     title="Music X API",
     description="Music x Api Best Music Api all end",
-    version="4.0.0",
+    version="4.5.0",
     docs_url="/swagger",
     redoc_url=None
 )
@@ -178,9 +178,8 @@ DOCS_HTML = """<!DOCTYPE html>
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; padding-bottom: 30px; position: relative; }
     
     .ambient-orb { position: fixed; border-radius: 50%; filter: blur(95px); pointer-events: none; z-index: 0; }
-    .orb-1 { width: 380px; height: 380px; background: rgba(99, 102, 241, 0.25); top: -80px; left: -80px; animation: float 16s infinite alternate ease-in-out; }
-    .orb-2 { width: 350px; height: 350px; background: rgba(236, 72, 153, 0.18); bottom: 40px; right: -40px; animation: float 20s infinite alternate ease-in-out; }
-    @keyframes float { 0% { transform: translateY(0) scale(1); } 100% { transform: translateY(40px) scale(1.06); } }
+    .orb-1 { width: 380px; height: 380px; background: rgba(99, 102, 241, 0.25); top: -80px; left: -80px; }
+    .orb-2 { width: 350px; height: 350px; background: rgba(236, 72, 153, 0.18); bottom: 40px; right: -40px; }
 
     .liquid-glass {
       background: var(--glass-bg);
@@ -194,59 +193,43 @@ DOCS_HTML = """<!DOCTYPE html>
     .container { width: 100%; max-width: 980px; margin: 0 auto; padding: 24px 16px 20px; position: relative; z-index: 1; }
 
     header { text-align: center; margin-bottom: 28px; }
-    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .title { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .subtitle { color: #38bdf8; margin-top: 8px; font-size: clamp(0.95rem, 3vw, 1.15rem); font-weight: 600; letter-spacing: -0.01em; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 100px; font-size: 0.75rem; font-weight: 700; color: #a5b4fc; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 12px; }
+    .title { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; background: linear-gradient(135deg, #fff 40%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subtitle { color: #38bdf8; margin-top: 8px; font-size: clamp(0.95rem, 3vw, 1.15rem); font-weight: 600; }
 
     .base-card { padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
-    .base-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-weight: 700; margin-bottom: 2px; }
+    .base-title { font-size: 0.72rem; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
     .base-url { font-family: monospace; font-size: 0.95rem; color: #34d399; font-weight: 600; word-break: break-all; }
     
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 15px; border-radius: 10px; font-size: 0.84rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s ease; text-decoration: none; white-space: nowrap; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 15px; border-radius: 10px; font-size: 0.84rem; font-weight: 600; border: none; cursor: pointer; transition: 0.2s ease; text-decoration: none; }
     .btn-grad { background: var(--accent-grad); color: #fff; box-shadow: 0 4px 18px var(--accent-glow); }
-    .btn-grad:hover { transform: translateY(-2px); }
     .btn-ghost { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border); color: #fff; }
-    .btn-ghost:hover { background: rgba(255, 255, 255, 0.14); }
     .btn-test { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; }
-    .btn-test:hover { background: rgba(56, 189, 248, 0.25); color: #fff; }
 
     .endpoints-grid { display: flex; flex-direction: column; gap: 16px; }
     .endpoint-card { padding: 20px; transition: border-color 0.25s; }
     .endpoint-card:hover { border-color: rgba(255, 255, 255, 0.25); }
     .ep-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-    .method-get { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem; letter-spacing: 0.04em; }
+    .method-get { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem; }
     .ep-path { font-size: clamp(1rem, 3.5vw, 1.15rem); font-weight: 700; font-family: monospace; color: #fff; }
-    .ep-desc { color: var(--text-dim); font-size: 0.88rem; margin-bottom: 12px; line-height: 1.5; }
+    .ep-desc { color: var(--text-dim); font-size: 0.88rem; margin-bottom: 12px; }
 
-    /* Custom Input Control Panel */
     .input-control-box { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.25); padding: 6px 10px; border-radius: 12px; border: 1px solid var(--glass-border); }
     .input-label { font-size: 0.78rem; font-weight: 700; color: #38bdf8; font-family: monospace; white-space: nowrap; }
     .custom-input { flex: 1; min-width: 0; background: transparent; border: none; color: #fff; outline: none; font-size: 0.88rem; font-weight: 500; }
-    .custom-input::placeholder { color: rgba(255,255,255,0.3); }
     
     .url-preview { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.06); padding: 10px 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-family: monospace; font-size: 0.82rem; color: #e2e8f0; flex-wrap: wrap; }
     .url-text { word-break: break-all; flex: 1; min-width: 180px; }
-    .action-group { display: flex; gap: 6px; width: auto; }
+    .action-group { display: flex; gap: 6px; }
 
     .json-viewer-container { display: none; margin-top: 14px; background: rgba(2, 4, 10, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; }
-    .json-viewer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-dim); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px; }
     .json-output { max-height: 250px; overflow-y: auto; font-family: monospace; font-size: 0.82rem; line-height: 1.6; color: #a5b4fc; white-space: pre-wrap; word-break: break-all; }
 
     footer { margin-top: 40px; padding: 24px 16px; text-align: center; border-radius: 20px; }
     .dev-title { font-size: clamp(0.95rem, 3.5vw, 1.15rem); font-weight: 700; margin-bottom: 14px; background: linear-gradient(135deg, #f43f5e, #fb923c, #eab308, #3b82f6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .social-links { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-    .social-badge { display: inline-flex; align-items: center; gap: 6px; background: #000000; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 10px; color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 600; transition: 0.2s ease; box-shadow: 0 4px 14px rgba(0,0,0,0.5); }
-    .social-badge:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.35); }
-    .social-badge svg { width: 16px; height: 16px; fill: currentColor; }
+    .social-links { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
+    .social-badge { display: inline-flex; align-items: center; gap: 6px; background: #000; border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 14px; border-radius: 10px; color: #fff; text-decoration: none; font-size: 0.82rem; font-weight: 600; }
     .copyright { font-size: 0.8rem; font-weight: 600; background: linear-gradient(135deg, #ec4899, #8b5cf6, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    .toast { position: fixed; bottom: 18px; right: 18px; background: #10b981; color: #fff; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; transform: translateY(80px); opacity: 0; transition: 0.25s; z-index: 999; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); }
-    .toast.show { transform: translateY(0); opacity: 1; }
-
-    @media (max-width: 640px) {
-      .action-group { width: 100%; margin-top: 8px; }
-      .action-group .btn { flex: 1; }
-    }
   </style>
 </head>
 <body>
@@ -265,15 +248,12 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="base-title">Active Base Host URL</div>
         <div class="base-url" id="baseUrlText">https://...</div>
       </div>
-      <button class="btn btn-grad" onclick="copyBaseUrl()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-        Copy Base URL
-      </button>
+      <button class="btn btn-grad" onclick="navigator.clipboard.writeText(window.location.origin); alert('Base URL Copied!');">Copy Base URL</button>
     </div>
 
     <div class="endpoints-grid">
 
-      <!-- 1. Search Endpoint -->
+      <!-- 1. Search -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
@@ -282,13 +262,11 @@ DOCS_HTML = """<!DOCTYPE html>
           </div>
           <span style="font-size:0.75rem; color:var(--text-dim);">Global Search</span>
         </div>
-        <div class="ep-desc">Search tracks, sound tracks, and singer names in real time.</div>
-        
+        <div class="ep-desc">Search tracks, movie soundtracks, and artists in real time.</div>
         <div class="input-control-box">
           <span class="input-label">?q=</span>
-          <input type="text" id="param-search" class="custom-input" value="Kesariya" oninput="updateUrl('search')" placeholder="Type song name..." />
+          <input type="text" id="param-search" class="custom-input" value="Kesariya" oninput="updateUrl('search')" />
         </div>
-
         <div class="url-preview">
           <span class="url-text" id="url-search">...</span>
           <div class="action-group">
@@ -299,146 +277,20 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="json-viewer-container" id="box-search"><div class="json-output" id="out-search"></div></div>
       </div>
 
-      <!-- 2. Download / Stream Endpoint -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/download</span>
-          </div>
-          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3</span>
-        </div>
-        <div class="ep-desc">Streams & triggers high-speed MP3 downloads with zero Akamai blocks.</div>
-        
-        <div class="input-control-box">
-          <span class="input-label">?id=</span>
-          <input type="text" id="param-download" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('download')" placeholder="Enter Song ID..." />
-        </div>
-
-        <div class="url-preview">
-          <span class="url-text" id="url-download">...</span>
-          <div class="action-group">
-            <a href="#" target="_blank" class="btn btn-test" id="btn-download">Direct Download ↗</a>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('download')">Copy</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Lyrics Endpoint -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/lyrics</span>
-          </div>
-          <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">★ OFFICIAL LYRICS</span>
-        </div>
-        <div class="ep-desc">Extract official track lyrics with synced line breaks and clean formatting.</div>
-        
-        <div class="input-control-box">
-          <span class="input-label">?id=</span>
-          <input type="text" id="param-lyrics" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('lyrics')" placeholder="Enter Track ID..." />
-        </div>
-
-        <div class="url-preview">
-          <span class="url-text" id="url-lyrics">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('lyrics')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('lyrics')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-lyrics"><div class="json-output" id="out-lyrics" style="color:#fde047; line-height:1.8;"></div></div>
-      </div>
-
-      <!-- 4. Song Details Endpoint -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/song</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Signed CDN Stream</span>
-        </div>
-        <div class="ep-desc">Retrieve metadata and signed playable CDN streaming URLs.</div>
-        
-        <div class="input-control-box">
-          <span class="input-label">?id=</span>
-          <input type="text" id="param-song" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('song')" placeholder="Enter Song ID..." />
-        </div>
-
-        <div class="url-preview">
-          <span class="url-text" id="url-song">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('song')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('song')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-song"><div class="json-output" id="out-song"></div></div>
-      </div>
-
-      <!-- 5. Trending Endpoint -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/trending</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Top Charts</span>
-        </div>
-        <div class="ep-desc">Extract official Top Trending tracks currently featured on home charts.</div>
-        
-        <div class="url-preview">
-          <span class="url-text" id="url-trending">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('trending')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('trending')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-trending"><div class="json-output" id="out-trending"></div></div>
-      </div>
-
-      <!-- 6. Artist Profile Endpoint -->
-      <div class="endpoint-card liquid-glass">
-        <div class="ep-top">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="method-get">GET</span>
-            <span class="ep-path">/api/artist</span>
-          </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Artist Discography</span>
-        </div>
-        <div class="ep-desc">Get singer biography, HD profile pictures, and popular top songs.</div>
-        
-        <div class="input-control-box">
-          <span class="input-label">?name=</span>
-          <input type="text" id="param-artist" class="custom-input" value="Arijit Singh" oninput="updateUrl('artist')" placeholder="Enter Artist Name..." />
-        </div>
-
-        <div class="url-preview">
-          <span class="url-text" id="url-artist">...</span>
-          <div class="action-group">
-            <button class="btn btn-test" onclick="executeTest('artist')">Run In UI</button>
-            <button class="btn btn-ghost" onclick="copyDynamicUrl('artist')">Copy</button>
-          </div>
-        </div>
-        <div class="json-viewer-container" id="box-artist"><div class="json-output" id="out-artist"></div></div>
-      </div>
-
-      <!-- 7. Playlist Endpoint -->
+      <!-- 2. Playlists (FIXED) -->
       <div class="endpoint-card liquid-glass">
         <div class="ep-top">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="method-get">GET</span>
             <span class="ep-path">/api/playlist</span>
           </div>
-          <span style="font-size:0.75rem; color:var(--text-dim);">Playlists</span>
+          <span style="font-size:0.75rem; color:#38bdf8; font-weight:700;">★ FULL TRACKLIST</span>
         </div>
-        <div class="ep-desc">Unpack complete playlist tracks and cover artwork by title query.</div>
-        
+        <div class="ep-desc">Search and unpack complete playlist tracks by title query (e.g. Hindi, Romance, Sad) or Playlist ID.</div>
         <div class="input-control-box">
           <span class="input-label">?q=</span>
-          <input type="text" id="param-playlist" class="custom-input" value="Hindi Romance" oninput="updateUrl('playlist')" placeholder="Enter Playlist query..." />
+          <input type="text" id="param-playlist" class="custom-input" value="Hindi Romance" oninput="updateUrl('playlist')" />
         </div>
-
         <div class="url-preview">
           <span class="url-text" id="url-playlist">...</span>
           <div class="action-group">
@@ -449,26 +301,132 @@ DOCS_HTML = """<!DOCTYPE html>
         <div class="json-viewer-container" id="box-playlist"><div class="json-output" id="out-playlist"></div></div>
       </div>
 
+      <!-- 3. Download / Stream -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/download</span>
+          </div>
+          <span style="font-size:0.75rem; color:#f43f5e; font-weight:700;">★ 320KBPS MP3</span>
+        </div>
+        <div class="ep-desc">High-speed streaming & direct MP3 download proxy.</div>
+        <div class="input-control-box">
+          <span class="input-label">?id=</span>
+          <input type="text" id="param-download" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('download')" />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-download">...</span>
+          <div class="action-group">
+            <a href="#" target="_blank" class="btn btn-test" id="btn-download">Direct Download ↗</a>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('download')">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Lyrics -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/lyrics</span>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Lyrics</span>
+        </div>
+        <div class="ep-desc">Official track lyrics with synced line breaks.</div>
+        <div class="input-control-box">
+          <span class="input-label">?id=</span>
+          <input type="text" id="param-lyrics" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('lyrics')" />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-lyrics">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('lyrics')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('lyrics')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-lyrics"><div class="json-output" id="out-lyrics" style="color:#fde047; line-height:1.8;"></div></div>
+      </div>
+
+      <!-- 5. Song Details -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/song</span>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Signed Stream</span>
+        </div>
+        <div class="ep-desc">Metadata and signed playable CDN streaming URLs.</div>
+        <div class="input-control-box">
+          <span class="input-label">?id=</span>
+          <input type="text" id="param-song" class="custom-input" value="s_oVd9yZ" oninput="updateUrl('song')" />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-song">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('song')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('song')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-song"><div class="json-output" id="out-song"></div></div>
+      </div>
+
+      <!-- 6. Trending -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/trending</span>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Top Charts</span>
+        </div>
+        <div class="ep-desc">Official Top Trending tracks currently featured on home charts.</div>
+        <div class="url-preview">
+          <span class="url-text" id="url-trending">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('trending')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('trending')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-trending"><div class="json-output" id="out-trending"></div></div>
+      </div>
+
+      <!-- 7. Artist -->
+      <div class="endpoint-card liquid-glass">
+        <div class="ep-top">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="method-get">GET</span>
+            <span class="ep-path">/api/artist</span>
+          </div>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Artist Info</span>
+        </div>
+        <div class="ep-desc">Get singer biography, HD profile pictures, and popular top songs.</div>
+        <div class="input-control-box">
+          <span class="input-label">?name=</span>
+          <input type="text" id="param-artist" class="custom-input" value="Arijit Singh" oninput="updateUrl('artist')" />
+        </div>
+        <div class="url-preview">
+          <span class="url-text" id="url-artist">...</span>
+          <div class="action-group">
+            <button class="btn btn-test" onclick="executeTest('artist')">Run In UI</button>
+            <button class="btn btn-ghost" onclick="copyDynamicUrl('artist')">Copy</button>
+          </div>
+        </div>
+        <div class="json-viewer-container" id="box-artist"><div class="json-output" id="out-artist"></div></div>
+      </div>
+
     </div>
 
-    <!-- Liquid Glass Custom Footer -->
     <footer class="liquid-glass">
       <div class="dev-title">Dev:BY-—͟͞͞ 𝙔ᴀᴅᴀᴠ<\>x- 🇮🇳𒌋ᥫ᭡</div>
       <div class="social-links">
-        <a href="https://t.me/YADAVXAHIR" target="_blank" class="social-badge">
-          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
-          Telegram
-        </a>
-        <a href="https://github.com/Dev0Yadavx/music-x-api" target="_blank" class="social-badge">
-          <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-          GitHub
-        </a>
+        <a href="https://t.me/YADAVXAHIR" target="_blank" class="social-badge">Telegram</a>
+        <a href="https://github.com/Dev0Yadavx/music-x-api" target="_blank" class="social-badge">GitHub</a>
       </div>
       <div class="copyright">All Copyrights © Music x reserved</div>
     </footer>
   </div>
-
-  <div id="toast" class="toast">Copied to Clipboard!</div>
 
   <script>
     const origin = window.location.origin;
@@ -476,12 +434,12 @@ DOCS_HTML = """<!DOCTYPE html>
 
     const routes = {
       'search': (val) => `/api/search?q=${encodeURIComponent(val)}&limit=5`,
+      'playlist': (val) => `/api/playlist?q=${encodeURIComponent(val)}`,
       'download': (val) => `/api/download?id=${encodeURIComponent(val)}`,
       'lyrics': (val) => `/api/lyrics?id=${encodeURIComponent(val)}`,
       'song': (val) => `/api/song?id=${encodeURIComponent(val)}`,
       'trending': () => `/api/trending`,
-      'artist': (val) => `/api/artist?name=${encodeURIComponent(val)}`,
-      'playlist': (val) => `/api/playlist?q=${encodeURIComponent(val)}`
+      'artist': (val) => `/api/artist?name=${encodeURIComponent(val)}`
     };
 
     function updateUrl(key) {
@@ -499,25 +457,12 @@ DOCS_HTML = """<!DOCTYPE html>
       }
     }
 
-    // Initialize all preview URLs
     Object.keys(routes).forEach(key => updateUrl(key));
-
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.innerText = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2000);
-    }
-
-    function copyBaseUrl() {
-      navigator.clipboard.writeText(origin);
-      showToast('Base URL Copied!');
-    }
 
     function copyDynamicUrl(key) {
       const text = document.getElementById('url-' + key).innerText;
       navigator.clipboard.writeText(text);
-      showToast('Endpoint URL Copied!');
+      alert('Copied!');
     }
 
     async function executeTest(key) {
@@ -614,7 +559,104 @@ def stream_or_download_song(id: str = Query(..., description="Track ID"), reques
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 2. SEARCH
+# 2. PLAYLIST ENGINE (FULLY FIXED WITH RECURSIVE DETAILS RESOLUTION)
+@app.get("/api/playlist", tags=["Playlists"])
+def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
+    if not q and not id:
+        raise HTTPException(status_code=400, detail="Provide either 'q' (search term) or 'id'")
+    
+    list_id = id
+    list_token = None
+
+    # Step A: Agar query di hai toh search karein
+    if q and not list_id:
+        search_params = {
+            '__call': 'search.getPlaylistResults',
+            '_format': 'json',
+            '_marker': '0',
+            'api_version': '4',
+            'ctx': 'web6dot0',
+            'p': '1',
+            'n': '10',
+            'q': q
+        }
+        try:
+            s_res = requests.get(BASE_URL, params=search_params, headers=HEADERS, timeout=8).json()
+            results = s_res.get('results', []) or s_res.get('data', {}).get('results', [])
+            if not results:
+                raise HTTPException(status_code=404, detail=f"No playlists found matching '{q}'")
+            
+            matched = results[0]
+            list_id = matched.get('id') or matched.get('listid')
+            # Token perma_url fallback
+            perma = matched.get('perma_url', '')
+            if perma and '/' in perma:
+                list_token = perma.rstrip('/').split('/')[-1]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Playlist search error: {str(e)}")
+
+    # Step B: Playlist details fetch karein
+    details_res = None
+
+    # Method 1: List ID dwara
+    if list_id:
+        det_params = {
+            '__call': 'playlist.getDetails',
+            '_format': 'json',
+            '_marker': '0',
+            'api_version': '4',
+            'ctx': 'web6dot0',
+            'listid': str(list_id)
+        }
+        try:
+            r = requests.get(BASE_URL, params=det_params, headers=HEADERS, timeout=8).json()
+            if isinstance(r, dict) and (r.get('songs') or r.get('list')):
+                details_res = r
+        except Exception:
+            pass
+
+    # Method 2: Token / Perma URL dwara agar listid se songs na mile hon
+    if (not details_res or not details_res.get('songs')) and (list_token or list_id):
+        token_to_use = list_token or str(list_id)
+        token_params = {
+            '__call': 'webapi.get',
+            'token': token_to_use,
+            'type': 'playlist',
+            '_format': 'json',
+            '_marker': '0',
+            'api_version': '4',
+            'ctx': 'web6dot0'
+        }
+        try:
+            r = requests.get(BASE_URL, params=token_params, headers=HEADERS, timeout=8).json()
+            if isinstance(r, dict) and (r.get('songs') or r.get('list')):
+                details_res = r
+        except Exception:
+            pass
+
+    if not details_res or not isinstance(details_res, dict):
+        raise HTTPException(status_code=404, detail="Playlist details could not be loaded")
+
+    raw_songs = details_res.get('songs', []) or details_res.get('list', [])
+    if isinstance(raw_songs, dict):
+        raw_songs = list(raw_songs.values())
+
+    return {
+        "app": "Music X API",
+        "status": "success",
+        "playlist": {
+            "id": details_res.get('id') or list_id,
+            "title": clean_text(details_res.get('title') or details_res.get('name')),
+            "total_tracks": int(details_res.get('list_count') or len(raw_songs)),
+            "header_desc": clean_text(details_res.get('header_desc')),
+            "image": (details_res.get('image') or '').replace('150x150', '500x500')
+        },
+        "songs": [format_song(s) for s in raw_songs if isinstance(s, dict)]
+    }
+
+# 3. SEARCH
 @app.get("/api/search", tags=["Search"])
 def search_songs(q: str = Query(..., description="Song name"), page: int = 1, limit: int = 20):
     raw_results = []
@@ -640,7 +682,7 @@ def search_songs(q: str = Query(..., description="Song name"), page: int = 1, li
         "data": [format_song(s) for s in raw_results if isinstance(s, dict)]
     }
 
-# 3. SONG DETAILS
+# 4. SONG DETAILS
 @app.get("/api/song", tags=["Streams"])
 def get_song(id: str = Query(..., description="Track ID")):
     params = {'__call': 'song.getDetails', '_format': 'json', '_marker': '0', 'pids': id}
@@ -655,7 +697,7 @@ def get_song(id: str = Query(..., description="Track ID")):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 4. TRENDING
+# 5. TRENDING
 @app.get("/api/trending", tags=["Trending"])
 def get_trending():
     params = {'__call': 'webapi.getLaunchData', '_format': 'json', '_marker': '0', 'api_version': '4', 'ctx': 'web6dot0'}
@@ -670,47 +712,7 @@ def get_trending():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 5. PLAYLISTS
-@app.get("/api/playlist", tags=["Playlists"])
-def get_playlist(q: Optional[str] = None, id: Optional[str] = None):
-    if not q and not id:
-        raise HTTPException(status_code=400, detail="Provide either 'q' or 'id'")
-    
-    list_id = id
-    if q and not list_id:
-        s_res = requests.get(BASE_URL, params={'__call': 'search.getPlaylistResults', '_format': 'json', '_marker': '0', 'p': '1', 'n': '1', 'q': q}, headers=HEADERS).json()
-        playlists = s_res.get('results', [])
-        if not playlists:
-            raise HTTPException(status_code=404, detail="Playlist not found")
-        list_id = playlists[0].get('id')
-
-    params = {
-        '__call': 'playlist.getDetails',
-        '_format': 'json',
-        '_marker': '0',
-        'api_version': '4',
-        'ctx': 'web6dot0',
-        'listid': list_id
-    }
-    res = requests.get(BASE_URL, params=params, headers=HEADERS, timeout=8).json()
-    
-    songs_data = res.get('songs', [])
-    if isinstance(songs_data, dict):
-        songs_data = list(songs_data.values())
-
-    return {
-        "app": "Music X API",
-        "status": "success",
-        "playlist": {
-            "id": list_id,
-            "title": clean_text(res.get('title')),
-            "total_tracks": int(res.get('list_count') or len(songs_data)),
-            "image": res.get('image', '').replace('150x150', '500x500')
-        },
-        "songs": [format_song(s) for s in songs_data if isinstance(s, dict)]
-    }
-
-# 6. LYRICS ENGINE
+# 6. LYRICS
 @app.get("/api/lyrics", tags=["Lyrics"])
 def get_lyrics(id: str = Query(..., description="Song ID")):
     try:
