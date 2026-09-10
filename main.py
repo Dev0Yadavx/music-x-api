@@ -217,13 +217,13 @@ DOCS_HTML = """<!DOCTYPE html>
       </button>
     </div>
 
-    <!-- Base URL Card -->
+    <!-- Base URL Card (Dynamic Cloud/Local) -->
     <div class="base-url-card">
       <div class="base-left">
         <span class="base-tag">BASE URL</span>
-        <span class="base-text" id="base-url-val">http://127.0.0.1:8000</span>
+        <span class="base-text" id="base-url-val">Loading...</span>
       </div>
-      <button class="btn-sm" onclick="copyText('http://127.0.0.1:8000', 'Base URL Copied!')">Copy</button>
+      <button class="btn-sm" onclick="copyText(window.location.origin, 'Base URL Copied!')">Copy</button>
     </div>
 
     <!-- 1. SEARCH & SUGGESTIONS -->
@@ -870,8 +870,18 @@ DOCS_HTML = """<!DOCTYPE html>
       document.body.removeChild(textArea);
     }
 
+    // Dynamically set Base URL on page load (Local/Cloud auto-detect)
+    window.addEventListener('DOMContentLoaded', () => {
+      const activeOrigin = window.location.origin;
+      const baseValElem = document.getElementById('base-url-val');
+      if (baseValElem) {
+        baseValElem.innerText = activeOrigin;
+      }
+    });
+
     function copyEndpoint(path) {
-      copyText("http://127.0.0.1:8000" + path, "Endpoint URL Copied!");
+      const currentHost = window.location.origin;
+      copyText(currentHost + path, "Endpoint URL Copied!");
     }
 
     // Inline Green JSON Test Trigger
@@ -1022,7 +1032,7 @@ interface MusicXApiService {
     // Direct Copy Web JavaScript Code (ALL 30+ ENDPOINTS)
     function copyWebCode() {
       const code = `// Music X API - Web JavaScript Client (All 30+ Endpoints)
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = window.location.origin;
 
 export const MusicX = {
   getStatus: () => fetch(\`\${BASE_URL}/api/status\`).then(r => r.json()),
