@@ -1,0 +1,46 @@
+import hashlib
+import json
+import time
+
+sapisid = "S9jqteICG3Y9kTDN/AQH7gRAwYJnen4mOq"
+origin = "https://music.youtube.com"
+timestamp = str(int(time.time()))
+
+payload = f"{timestamp} {sapisid} {origin}"
+sapisid_hash = hashlib.sha1(payload.encode("utf-8")).hexdigest()
+auth_val = f"SAPISIDHASH {timestamp}_{sapisid_hash}"
+
+cookie_str = (
+    "VISITOR_INFO1_LIVE=w5m1ty9nB5Q; "
+    "VISITOR_PRIVACY_METADATA=CgJJThIEGgAgQQ%3D%3D; "
+    "LOGIN_INFO=AFmmF2swRQIgVgH1QK2W-dMcZNuKhIgw5dXwDvdIFhMJVyWcaQRDmjACIQCMkNSz028SfyEuAo26oKd0O-2hYYcO3O5zAj0OBBErLg:QUQ3MjNmeGRzN2kzdGx5bENmLWRFNm9URlNXUmlQanlrNUtFX2dua0YtY2tWb0hzd1R4bHV5QWdHbEpxVFdSNmRjTW13ZzB2WkFnVjJXcklPRV91ZDYtT3RoTmxGSWxqUTlxMU5iRHRMdzdCYmZNemgxbVRPOWEzeG9DODlPdnhsbEZvdndFdk5XQVVzUHhEMUNrREZfQ2dWaGkza0s0MDJn; "
+    "PREF=f6=40000000&tz=Asia.Calcutta&repeat=NONE&autoplay=true; "
+    "SID=g.a000CQms4UdRCBv5wcHV_0k1TMw9JqLmcf0N2ryXuCf4JycjBrrrP9wcXOm51rHylVGZZZUKYgACgYKAV4SARESFQHGX2MiNfK8XlZ3YHWrBCGdOYzUBhoVAUF8yKqknhjIGevI_OcjvLYIrdeM0076; "
+    "__Secure-1PSID=g.a000CQms4UdRCBv5wcHV_0k1TMw9JqLmcf0N2ryXuCf4JycjBrrrzNqZsWHFYMXBaKWOKZcBZQACgYKAdASARESFQHGX2MiuiJ-CWNYk4CrAAjt8WjRQxoVAUF8yKp30bO06ctk3Lyo3D0yeNoZ0076; "
+    "__Secure-3PSID=g.a000CQms4UdRCBv5wcHV_0k1TMw9JqLmcf0N2ryXuCf4JycjBrrrjscQL0IIVQcNFGUWSrpNwAACgYKASMSARESFQHGX2MiIcWhOOrirkxCiYMvEx8HeRoVAUF8yKouZqwjz0W3ygcIO0aCHZdR0076; "
+    "HSID=AtT8abqrS1SJNgEKF; SSID=AIdiA78eVPsctP3CO; APISID=xG4beIIbzft5Y_9B/AFcxCEHwEdfLfcXJn; "
+    "SAPISID=S9jqteICG3Y9kTDN/AQH7gRAwYJnen4mOq; "
+    "__Secure-1PAPISID=S9jqteICG3Y9kTDN/AQH7gRAwYJnen4mOq; "
+    "__Secure-3PAPISID=S9jqteICG3Y9kTDN/AQH7gRAwYJnen4mOq; "
+    "SIDCC=AKEyXzUm5aRUHXWHghRg3xiXDrtUwg27Xav1EWjAbPH6WP3JZnC2uFoqsJyxUl21XVLVihClwA; "
+    "__Secure-1PSIDCC=AKEyXzWkYtWbMFw3VFPrpvK13yecD1bRQCFrqQIjLelshmBQmzwjX1f6SNLa1mwzrSzpHs25; "
+    "__Secure-3PSIDCC=AKEyXzU2-79vTtN-F85M49S-xubdGl7xo0MH-VkJGWtgQ-QJiUEiulvgwQUq-cQ4CBq_p_IZ; "
+    "__Secure-1PSIDTS=sidts-CjQBXMw41cwRlr9kt5I5_JPF-g8hnzjovSKO2ayKJdnVd32VKUC26DEOep4Sh4KgnExuTCjGEAA; "
+    "__Secure-3PSIDTS=sidts-CjQBXMw41cwRlr9kt5I5_JPF-g8hnzjovSKO2ayKJdnVd32VKUC26DEOep4Sh4KgnExuTCjGEAA"
+)
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
+    "Accept": "*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Content-Type": "application/json",
+    "X-Goog-AuthUser": "0",
+    "x-origin": origin,
+    "Authorization": auth_val,
+    "Cookie": cookie_str
+}
+
+with open("headers_auth.json", "w") as f:
+    json.dump(headers, f, indent=4)
+
+print("[+] headers_auth.json generated successfully!")

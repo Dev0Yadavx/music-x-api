@@ -1,0 +1,46 @@
+[+] YTMusic authenticated via headers_auth.json
+ * Serving Flask app 'main'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.0.0.2:8000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 506-915-905
+127.0.0.1 - - [10/Sep/2026 13:16:02] "GET /api/status HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:03] "GET /search?q=Arijit+Singh&filter=songs HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:03] "GET /search/suggestions?q=Bhojpuri HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:04] "GET /browse/charts?country=IN HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:07] "GET /browse/home?limit=2 HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:10] "GET /browse/explore HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:10] "GET /browse/moods HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:12] "GET /song/kJQP7kiw5Fk HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:14] "GET /watch/kJQP7kiw5Fk HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:16] "GET /song/related/kJQP7kiw5Fk HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:19] "GET /lyrics/kJQP7kiw5Fk HTTP/1.1" 200 -
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+127.0.0.1 - - [10/Sep/2026 13:16:25] "GET /stream/kJQP7kiw5Fk HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:26] "GET /artist/UC0C-w0YjGpqDXGB8IHb662A HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:27] "[35m[1mGET /playlist/PL4fGSI1pDJn6jXS_PE_xWDwO565Ca9yVO HTTP/1.1[0m" 500 -
+127.0.0.1 - - [10/Sep/2026 13:16:28] "[35m[1mGET /playlist/RDCLAK5uy_kfdxRPFiMS06TvTT9xLqvHG7ZyvW64t80 HTTP/1.1[0m" 500 -
+127.0.0.1 - - [10/Sep/2026 13:16:28] "GET /library/history HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:29] "GET /library/playlists HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:29] "GET /library/songs HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:29] "GET /library/albums HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:30] "GET /library/artists HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:30] "GET /library/channels HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:30] "GET /library/podcasts HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:31] "GET /library/uploads HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:32] "GET /library/upload-artists HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:16:32] "GET /library/upload-albums HTTP/1.1" 200 -
+127.0.0.1 - - [10/Sep/2026 13:23:21] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+ * Detected change in '/data/data/com.termux/files/home/ytmusic-server/main.py', reloading
+[+] YTMusic authenticated via headers_auth.json
+/data/data/com.termux/files/usr/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-adozy_79'}
+  warnings.warn(
+/data/data/com.termux/files/usr/lib/python3.14/multiprocessing/resource_tracker.py:475: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-0artfj7f'}
+  warnings.warn(
+/data/data/com.termux/files/usr/lib/python3.14/multiprocessing/resource_tracker.py:491: UserWarning: resource_tracker: '/mp-0artfj7f': [Errno 2] No such file or directory
+  warnings.warn('resource_tracker: %r: %s' % (name, e))
