@@ -1162,20 +1162,43 @@ def get_lyrics(video_or_browse_id):
 
 @app.route("/stream/<video_id>")
 def get_stream(video_id):
-    ydl_opts = {'format': 'bestaudio/best', 'quiet': True, 'skip_download': True}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'quiet': True,
+        'no_warnings': True,
+        'skip_download': True,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios', 'web_embedded']
+            }
+        },
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36'
+        }
+    }
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(f"https://www.youtube.com/watch?v={video_id}", download=False)
+            stream_url = info.get("url")
+            
+            # Agar direct URL format list me nested ho
+            if not stream_url and "formats" in info:
+                audio_formats = [f for f in info["formats"] if f.get("acodec") != "none" and f.get("vcodec") == "none"]
+                if audio_formats:
+                    stream_url = audio_formats[-1].get("url")
+                else:
+                    stream_url = info["formats"][-1].get("url")
+
             return jsonify({
                 "id": video_id,
                 "title": info.get("title"),
                 "duration": info.get("duration"),
                 "thumbnail": info.get("thumbnail"),
-                "stream_url": info.get("url"),
-                "ext": info.get("ext")
+                "stream_url": stream_url,
+                "ext": info.get("ext", "m4a")
             })
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/artist/<channel_id>")
 def get_artist(channel_id):
