@@ -2,10 +2,12 @@ import base64
 import os
 import re
 import requests
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask
+from flask_cors import CORS, request, jsonify, render_template_string
 from Crypto.Cipher import DES
 
 app = Flask(__name__)
+CORS(app)
 
 BASE_URL = "https://www.jiosaavn.com/api.php"
 DES_KEY = b"38346591"
