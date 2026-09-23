@@ -85,7 +85,7 @@ def resolve_song_data(identifier: str):
         return token_res["songs"][0]
     return None
 
-# --- ROOT API DOCS UI ---
+# --- ROOT API DOCS & SDK CONSOLE ---
 @app.route("/", methods=["GET"])
 def index():
     html_page = """
@@ -103,6 +103,7 @@ def index():
                 --pink: #ff2e93;
                 --yellow: #ffd000;
                 --green-neon: #39ff14;
+                --cyan-neon: #00f0ff;
                 --pink-glow: rgba(255, 46, 147, 0.4);
                 --yellow-glow: rgba(255, 208, 0, 0.35);
                 --gradient-py: linear-gradient(135deg, #ff2e93 0%, #ffd000 100%);
@@ -128,7 +129,7 @@ def index():
                 background-attachment: fixed;
             }
 
-            .container { max-width: 900px; margin: 0 auto; }
+            .container { max-width: 920px; margin: 0 auto; }
 
             header {
                 background: var(--glass-bg);
@@ -136,7 +137,7 @@ def index():
                 backdrop-filter: blur(24px) saturate(180%);
                 border-radius: 20px;
                 padding: 22px;
-                margin-bottom: 22px;
+                margin-bottom: 16px;
                 box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
                 position: relative;
                 overflow: hidden;
@@ -159,6 +160,178 @@ def index():
                 align-items: center;
                 gap: 12px;
             }
+
+            /* --- TOP DYNAMIC BASE URL BOX --- */
+            .base-url-card {
+                background: var(--glass-bg);
+                border: 1px solid rgba(255, 208, 0, 0.35);
+                backdrop-filter: blur(20px);
+                border-radius: 18px;
+                padding: 16px 18px;
+                margin-bottom: 22px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .base-url-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .base-label {
+                font-size: 12px;
+                font-weight: 800;
+                color: var(--yellow);
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .live-ping {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(57, 255, 20, 0.12);
+                color: var(--green-neon);
+                font-size: 11px;
+                font-weight: 700;
+                padding: 3px 10px;
+                border-radius: 20px;
+                border: 1px solid rgba(57, 255, 20, 0.3);
+            }
+            .ping-dot { width: 7px; height: 7px; background: var(--green-neon); border-radius: 50%; box-shadow: 0 0 8px var(--green-neon); animation: blink 1.4s infinite; }
+            @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+            .base-url-input-wrap {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                background: var(--code-bg);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 12px;
+                padding: 6px 10px;
+                flex-wrap: wrap;
+            }
+            .base-url-input {
+                flex: 1;
+                min-width: 200px;
+                background: transparent;
+                border: none;
+                color: #ffffff;
+                font-family: ui-monospace, monospace;
+                font-size: 13.5px;
+                font-weight: 600;
+                outline: none;
+            }
+            .base-btn-group {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .btn-base-copy {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 14px;
+                border-radius: 8px;
+                font-size: 11.5px;
+                font-weight: 700;
+                cursor: pointer;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                transition: transform 0.2s, box-shadow 0.2s;
+            }
+            .btn-base-copy:active { transform: scale(0.96); }
+            .btn-copy-android {
+                background: rgba(57, 255, 20, 0.1);
+                color: var(--green-neon);
+                border-color: rgba(57, 255, 20, 0.35);
+            }
+            .btn-copy-android:hover { background: rgba(57, 255, 20, 0.2); box-shadow: 0 0 14px rgba(57, 255, 20, 0.3); }
+            .btn-copy-web {
+                background: rgba(255, 46, 147, 0.12);
+                color: #ff55a3;
+                border-color: rgba(255, 46, 147, 0.35);
+            }
+            .btn-copy-web:hover { background: rgba(255, 46, 147, 0.22); box-shadow: 0 0 14px var(--pink-glow); }
+
+            /* --- SDK TABS SECTION --- */
+            .sdk-section {
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                backdrop-filter: blur(20px);
+                border-radius: 18px;
+                padding: 16px 18px;
+                margin-bottom: 22px;
+            }
+            .sdk-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 12px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .sdk-heading {
+                font-size: 14px;
+                font-weight: 800;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .sdk-tabs {
+                display: flex;
+                gap: 8px;
+            }
+            .sdk-tab-btn {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                color: var(--text-muted);
+                padding: 5px 12px;
+                border-radius: 8px;
+                font-size: 11.5px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .sdk-tab-btn.active {
+                background: var(--gradient-py);
+                color: #0b0710;
+                border-color: transparent;
+            }
+            .sdk-code-box {
+                position: relative;
+            }
+            .sdk-pre {
+                background: #030105;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                padding: 12px;
+                font-family: ui-monospace, monospace;
+                font-size: 11.5px;
+                color: var(--cyan-neon);
+                white-space: pre-wrap;
+                word-break: break-all;
+                max-height: 180px;
+                overflow-y: auto;
+            }
+            .btn-sdk-copy {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background: rgba(255, 255, 255, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #fff;
+                padding: 4px 10px;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .btn-sdk-copy:hover { background: rgba(255, 255, 255, 0.25); }
 
             .cards-list { display: flex; flex-direction: column; gap: 14px; }
 
@@ -424,6 +597,48 @@ def index():
                 </h1>
             </header>
 
+            <!-- UPER ME BASE URL COPY BOX (DYNAMIC HOST DETECTION) -->
+            <div class="base-url-card">
+                <div class="base-url-header">
+                    <span class="base-label">
+                        <svg viewBox="0 0 24 24" style="fill: var(--yellow);"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                        Current Live Host Base URL
+                    </span>
+                    <span class="live-ping"><span class="ping-dot"></span> 200 OK LIVE</span>
+                </div>
+                <div class="base-url-input-wrap">
+                    <input type="text" id="liveBaseUrlField" class="base-url-input" readonly>
+                    <div class="base-btn-group">
+                        <button class="btn-base-copy btn-copy-android" onclick="copyBaseOnly('android')">
+                            <svg viewBox="0 0 24 24"><path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-4.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 2.23 12.95 2 12 2c-.96 0-1.86.23-2.66.63L7.85.99c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 4.26 6 6.01 6 8h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/></svg>
+                            Copy Android Base URL
+                        </button>
+                        <button class="btn-base-copy btn-copy-web" onclick="copyBaseOnly('web')">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            Copy Web Base URL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SDK QUICK IMPLEMENTATION TEMPLATES -->
+            <div class="sdk-section">
+                <div class="sdk-top">
+                    <span class="sdk-heading">
+                        <svg viewBox="0 0 24 24" style="fill: var(--cyan-neon);"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+                        SDK Client Setup (Android / Web)
+                    </span>
+                    <div class="sdk-tabs">
+                        <button class="sdk-tab-btn active" id="tabAndroid" onclick="switchSdk('android')">Android (Kotlin)</button>
+                        <button class="sdk-tab-btn" id="tabWeb" onclick="switchSdk('web')">Web (JS SDK)</button>
+                    </div>
+                </div>
+                <div class="sdk-code-box">
+                    <pre class="sdk-pre" id="sdkCodeView"></pre>
+                    <button class="btn-sdk-copy" onclick="copySdkCode()">Copy SDK</button>
+                </div>
+            </div>
+
             <div class="cards-list">
 
                 <!-- 1. HOME REGIONAL -->
@@ -661,6 +876,77 @@ def index():
         </div>
 
         <script>
+            // Live Dynamic Origin Detector
+            const currentHost = window.location.origin;
+            document.getElementById('liveBaseUrlField').value = currentHost + "/";
+
+            // SDK Generator
+            let activeSdkMode = 'android';
+
+            function updateSdkView() {
+                const origin = window.location.origin;
+                const view = document.getElementById('sdkCodeView');
+                if (activeSdkMode === 'android') {
+                    view.innerText = 
+`// 1. Android Retrofit Client (Kotlin)
+object MusicXClient {
+    private const val BASE_URL = "${origin}/"
+
+    val api: MusicXService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(MusicXService::class.java)
+    }
+}
+
+interface MusicXService {
+    @GET("search")
+    suspend fun searchSongs(@Query("query") q: String, @Query("limit") l: Int = 20): Response<SearchResponse>
+
+    @GET("song")
+    suspend fun getSongDetails(@Query("id") id: String): Response<SongResponse>
+}`;
+                } else {
+                    view.innerText = 
+`// 2. Web Client SDK (JavaScript / Fetch)
+class MusicXSDK {
+    constructor(baseURL = "${origin}") {
+        this.base = baseURL;
+    }
+    async search(query, limit = 20) {
+        const res = await fetch(\`\${this.base}/search?query=\${encodeURIComponent(query)}&limit=\${limit}\`);
+        return await res.json();
+    }
+    async getSong(id) {
+        const res = await fetch(\`\${this.base}/song?id=\${id}\`);
+        return await res.json();
+    }
+}
+const musicX = new MusicXSDK();`;
+                }
+            }
+
+            function switchSdk(type) {
+                activeSdkMode = type;
+                document.getElementById('tabAndroid').className = type === 'android' ? 'sdk-tab-btn active' : 'sdk-tab-btn';
+                document.getElementById('tabWeb').className = type === 'web' ? 'sdk-tab-btn active' : 'sdk-tab-btn';
+                updateSdkView();
+            }
+
+            function copyBaseOnly(target) {
+                const origin = window.location.origin;
+                const toCopy = target === 'android' ? (origin + "/") : origin;
+                const label = target === 'android' ? 'Android Base URL Copied!' : 'Web Base URL Copied!';
+                copyTextToClip(toCopy, label);
+            }
+
+            function copySdkCode() {
+                const code = document.getElementById('sdkCodeView').innerText;
+                copyTextToClip(code, 'SDK Code Template Copied!');
+            }
+
             function copyAllEndpoints(target) {
                 const fields = document.querySelectorAll('.ep-field');
                 const list = [];
@@ -670,11 +956,15 @@ def index():
                 });
                 const textToCopy = list.join('\\n');
                 const label = target === 'android' ? 'All Endpoints Copied (Android Paths)!' : 'All Endpoints Copied (Web URLs)!';
+                copyTextToClip(textToCopy, label);
+            }
+
+            function copyTextToClip(text, label) {
                 if (navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(textToCopy).then(() => showToast(label));
+                    navigator.clipboard.writeText(text).then(() => showToast(label));
                 } else {
                     const temp = document.createElement("textarea");
-                    temp.value = textToCopy;
+                    temp.value = text;
                     document.body.appendChild(temp);
                     temp.select();
                     document.execCommand("copy");
@@ -731,6 +1021,9 @@ def index():
                         jsonBox.innerText = 'Network error: ' + err;
                     });
             }
+
+            // Init SDK view on load
+            updateSdkView();
         </script>
     </body>
     </html>
