@@ -161,14 +161,14 @@ def index():
                 gap: 12px;
             }
 
-            /* --- TOP DYNAMIC BASE URL BOX --- */
+            /* --- TOP DYNAMIC BASE URL CARD --- */
             .base-url-card {
                 background: var(--glass-bg);
                 border: 1px solid rgba(255, 208, 0, 0.35);
                 backdrop-filter: blur(20px);
                 border-radius: 18px;
                 padding: 16px 18px;
-                margin-bottom: 22px;
+                margin-bottom: 20px;
                 box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
                 display: flex;
                 flex-direction: column;
@@ -258,7 +258,7 @@ def index():
             }
             .btn-copy-web:hover { background: rgba(255, 46, 147, 0.22); box-shadow: 0 0 14px var(--pink-glow); }
 
-            /* --- SDK TABS SECTION --- */
+            /* --- ALL ENDPOINTS SDK IMPLEMENTATION BOX --- */
             .sdk-section {
                 background: var(--glass-bg);
                 border: 1px solid var(--glass-border);
@@ -291,11 +291,12 @@ def index():
                 background: rgba(255, 255, 255, 0.08);
                 border: 1px solid rgba(255, 255, 255, 0.15);
                 color: var(--text-muted);
-                padding: 5px 12px;
+                padding: 6px 14px;
                 border-radius: 8px;
                 font-size: 11.5px;
                 font-weight: 700;
                 cursor: pointer;
+                transition: 0.2s;
             }
             .sdk-tab-btn.active {
                 background: var(--gradient-py);
@@ -309,29 +310,30 @@ def index():
                 background: #030105;
                 border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: 10px;
-                padding: 12px;
+                padding: 14px;
                 font-family: ui-monospace, monospace;
-                font-size: 11.5px;
+                font-size: 12px;
                 color: var(--cyan-neon);
                 white-space: pre-wrap;
                 word-break: break-all;
-                max-height: 180px;
+                max-height: 220px;
                 overflow-y: auto;
             }
             .btn-sdk-copy {
                 position: absolute;
-                top: 8px;
-                right: 8px;
-                background: rgba(255, 255, 255, 0.15);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-                color: #fff;
-                padding: 4px 10px;
+                top: 10px;
+                right: 10px;
+                background: var(--gradient-py);
+                border: none;
+                color: #0b0710;
+                padding: 5px 12px;
                 border-radius: 6px;
-                font-size: 11px;
-                font-weight: 700;
+                font-size: 11.5px;
+                font-weight: 800;
                 cursor: pointer;
+                box-shadow: 0 2px 8px var(--pink-glow);
             }
-            .btn-sdk-copy:hover { background: rgba(255, 255, 255, 0.25); }
+            .btn-sdk-copy:hover { opacity: 0.9; }
 
             .cards-list { display: flex; flex-direction: column; gap: 14px; }
 
@@ -469,44 +471,6 @@ def index():
                 word-break: break-all;
             }
 
-            .bulk-copy-card {
-                background: var(--glass-bg);
-                border: 1px solid rgba(255, 208, 0, 0.3);
-                backdrop-filter: blur(20px);
-                border-radius: 18px;
-                padding: 18px 20px;
-                margin-top: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                flex-wrap: wrap;
-                gap: 14px;
-            }
-            .bulk-title { font-size: 15px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
-            .bulk-subtitle { font-size: 12px; color: var(--text-muted); }
-            .bulk-buttons-group { display: flex; gap: 10px; flex-wrap: wrap; }
-            .btn-bulk {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 9px 16px;
-                border-radius: 10px;
-                font-size: 12.5px;
-                font-weight: 700;
-                cursor: pointer;
-                border: 1px solid rgba(255, 255, 255, 0.15);
-            }
-            .btn-bulk-android {
-                background: rgba(57, 255, 20, 0.1);
-                color: var(--green-neon);
-                border-color: rgba(57, 255, 20, 0.35);
-            }
-            .btn-bulk-web {
-                background: rgba(255, 46, 147, 0.12);
-                color: #ff55a3;
-                border-color: rgba(255, 46, 147, 0.35);
-            }
-
             .styled-divider {
                 border: none;
                 height: 1px;
@@ -621,12 +585,12 @@ def index():
                 </div>
             </div>
 
-            <!-- SDK QUICK IMPLEMENTATION TEMPLATES -->
+            <!-- ALL ENDPOINTS SDK IMPLEMENTATION BOX -->
             <div class="sdk-section">
                 <div class="sdk-top">
                     <span class="sdk-heading">
                         <svg viewBox="0 0 24 24" style="fill: var(--cyan-neon);"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
-                        SDK Client Setup (Android / Web)
+                        All Endpoints SDK Client Setup
                     </span>
                     <div class="sdk-tabs">
                         <button class="sdk-tab-btn active" id="tabAndroid" onclick="switchSdk('android')">Android (Kotlin)</button>
@@ -635,7 +599,7 @@ def index():
                 </div>
                 <div class="sdk-code-box">
                     <pre class="sdk-pre" id="sdkCodeView"></pre>
-                    <button class="btn-sdk-copy" onclick="copySdkCode()">Copy SDK</button>
+                    <button class="btn-sdk-copy" onclick="copySdkCode()">Copy All SDK</button>
                 </div>
             </div>
 
@@ -834,18 +798,6 @@ def index():
                 </div>
             </div>
 
-            <!-- BULK COPY DOCK -->
-            <div class="bulk-copy-card">
-                <div class="bulk-text">
-                    <div class="bulk-title">All Endpoints Single Copy Hub</div>
-                    <span class="bulk-subtitle">One-click copy for Android App dev & Web Integration</span>
-                </div>
-                <div class="bulk-buttons-group">
-                    <button class="btn-bulk btn-bulk-android" onclick="copyAllEndpoints('android')">Copy All (Android)</button>
-                    <button class="btn-bulk btn-bulk-web" onclick="copyAllEndpoints('web')">Copy All (Web)</button>
-                </div>
-            </div>
-
             <hr class="styled-divider">
 
             <!-- DEVELOPER SECTION -->
@@ -876,11 +828,9 @@ def index():
         </div>
 
         <script>
-            // Live Dynamic Origin Detector
             const currentHost = window.location.origin;
             document.getElementById('liveBaseUrlField').value = currentHost + "/";
 
-            // SDK Generator
             let activeSdkMode = 'android';
 
             function updateSdkView() {
@@ -888,43 +838,125 @@ def index():
                 const view = document.getElementById('sdkCodeView');
                 if (activeSdkMode === 'android') {
                     view.innerText = 
-`// 1. Android Retrofit Client (Kotlin)
+`// ==========================================
+// 1. Android Retrofit SDK Interface (Kotlin)
+// ==========================================
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
+
+interface MusicXApiService {
+    @GET("home")
+    suspend fun getHome(@Query("languages") langs: String = "hindi,bhojpuri,haryanvi"): Response<Any>
+
+    @GET("trending")
+    suspend fun getTrending(@Query("languages") langs: String = "hindi,bhojpuri,haryanvi"): Response<Any>
+
+    @GET("search/all")
+    suspend fun autocomplete(@Query("query") q: String): Response<Any>
+
+    @GET("search")
+    suspend fun searchSongs(@Query("query") q: String, @Query("page") p: Int = 1, @Query("limit") l: Int = 20): Response<Any>
+
+    @GET("search/albums")
+    suspend fun searchAlbums(@Query("query") q: String, @Query("page") p: Int = 1, @Query("limit") l: Int = 20): Response<Any>
+
+    @GET("search/playlists")
+    suspend fun searchPlaylists(@Query("query") q: String, @Query("page") p: Int = 1, @Query("limit") l: Int = 20): Response<Any>
+
+    @GET("song")
+    suspend fun getSong(@Query("id") id: String): Response<Any>
+
+    @GET("album")
+    suspend fun getAlbum(@Query("id") id: String): Response<Any>
+
+    @GET("playlist")
+    suspend fun getPlaylist(@Query("id") id: String): Response<Any>
+
+    @GET("artist")
+    suspend fun getArtist(@Query("id") id: String): Response<Any>
+
+    @GET("lyrics")
+    suspend fun getLyrics(@Query("id") id: String): Response<Any>
+
+    @GET("recommendations")
+    suspend fun getRecommendations(@Query("id") id: String): Response<Any>
+}
+
 object MusicXClient {
     private const val BASE_URL = "${origin}/"
 
-    val api: MusicXService by lazy {
+    val api: MusicXApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(MusicXService::class.java)
+            .create(MusicXApiService::class.java)
     }
-}
-
-interface MusicXService {
-    @GET("search")
-    suspend fun searchSongs(@Query("query") q: String, @Query("limit") l: Int = 20): Response<SearchResponse>
-
-    @GET("song")
-    suspend fun getSongDetails(@Query("id") id: String): Response<SongResponse>
 }`;
                 } else {
                     view.innerText = 
-`// 2. Web Client SDK (JavaScript / Fetch)
-class MusicXSDK {
+`// ==========================================
+// 2. Web Client SDK Class (JavaScript / Fetch)
+// ==========================================
+class MusicXClientSDK {
     constructor(baseURL = "${origin}") {
         this.base = baseURL;
     }
-    async search(query, limit = 20) {
-        const res = await fetch(\`\${this.base}/search?query=\${encodeURIComponent(query)}&limit=\${limit}\`);
-        return await res.json();
+
+    async getHome(langs = "hindi,bhojpuri,haryanvi") {
+        return (await fetch(\`\${this.base}/home?languages=\${langs}\`)).json();
     }
+
+    async getTrending(langs = "hindi,bhojpuri,haryanvi") {
+        return (await fetch(\`\${this.base}/trending?languages=\${langs}\`)).json();
+    }
+
+    async autocomplete(q) {
+        return (await fetch(\`\${this.base}/search/all?query=\${encodeURIComponent(q)}\`)).json();
+    }
+
+    async searchSongs(q, page = 1, limit = 20) {
+        return (await fetch(\`\${this.base}/search?query=\${encodeURIComponent(q)}&page=\${page}&limit=\${limit}\`)).json();
+    }
+
+    async searchAlbums(q, page = 1, limit = 20) {
+        return (await fetch(\`\${this.base}/search/albums?query=\${encodeURIComponent(q)}&page=\${page}&limit=\${limit}\`)).json();
+    }
+
+    async searchPlaylists(q, page = 1, limit = 20) {
+        return (await fetch(\`\${this.base}/search/playlists?query=\${encodeURIComponent(q)}&page=\${page}&limit=\${limit}\`)).json();
+    }
+
     async getSong(id) {
-        const res = await fetch(\`\${this.base}/song?id=\${id}\`);
-        return await res.json();
+        return (await fetch(\`\${this.base}/song?id=\${id}\`)).json();
+    }
+
+    async getAlbum(id) {
+        return (await fetch(\`\${this.base}/album?id=\${id}\`)).json();
+    }
+
+    async getPlaylist(id) {
+        return (await fetch(\`\${this.base}/playlist?id=\${id}\`)).json();
+    }
+
+    async getArtist(id) {
+        return (await fetch(\`\${this.base}/artist?id=\${id}\`)).json();
+    }
+
+    async getLyrics(id) {
+        return (await fetch(\`\${this.base}/lyrics?id=\${id}\`)).json();
+    }
+
+    async getRecommendations(id) {
+        return (await fetch(\`\${this.base}/recommendations?id=\${id}\`)).json();
     }
 }
-const musicX = new MusicXSDK();`;
+
+// Instance initialization
+const musicX = new MusicXClientSDK();`;
                 }
             }
 
@@ -944,19 +976,8 @@ const musicX = new MusicXSDK();`;
 
             function copySdkCode() {
                 const code = document.getElementById('sdkCodeView').innerText;
-                copyTextToClip(code, 'SDK Code Template Copied!');
-            }
-
-            function copyAllEndpoints(target) {
-                const fields = document.querySelectorAll('.ep-field');
-                const list = [];
-                const origin = window.location.origin;
-                fields.forEach(input => {
-                    list.push(target === 'android' ? input.value : origin + input.value);
-                });
-                const textToCopy = list.join('\\n');
-                const label = target === 'android' ? 'All Endpoints Copied (Android Paths)!' : 'All Endpoints Copied (Web URLs)!';
-                copyTextToClip(textToCopy, label);
+                const label = activeSdkMode === 'android' ? 'All Endpoints Android SDK Copied!' : 'All Endpoints Web SDK Copied!';
+                copyTextToClip(code, label);
             }
 
             function copyTextToClip(text, label) {
@@ -1022,7 +1043,6 @@ const musicX = new MusicXSDK();`;
                     });
             }
 
-            // Init SDK view on load
             updateSdkView();
         </script>
     </body>
